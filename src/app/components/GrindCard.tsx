@@ -7,7 +7,7 @@ export default function GrindCard({ grind }: { grind: Grind }) {
   const router = useRouter();
 
   const handleClick = () => {
-    router.push(`/grind/${grind.id}`);
+    router.push(`/grind`);
   };
 
   return (

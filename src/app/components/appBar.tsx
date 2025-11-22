@@ -35,7 +35,7 @@ const CustomAppBar: React.FC<AppBarProps> = () => {
       position="fixed" 
       elevation={0}
       sx={{
-        backgroundColor: 'background.default',
+        backgroundColor: 'transparent',
         color: 'text.primary',
         boxShadow: 'none',
         zIndex: 1000,

@@ -2,36 +2,23 @@ import { Task } from "./task.types";
 
 export interface Grind {
     id: number;
-    title: string;
-    description: string;
     startDate: string;
-    endDate: string;
     duration: number; // in days
     taskToday: Task;
-    punishment: {
-        dailyRate: number;
-        initialPrice: number;
-    };
-    autoRenew: boolean;
-    weeklyTest: boolean;
-    progress: DayProgress[];
+    budget: number;
+    progress: ProgressRecord[];
     participants: Participant[];
-    currentUser: {
-        missedDays: number;
-        totalPenalty: number;
-        avatar: string;
-    };
 }
 
-export interface DayProgress {
-    day: number;
+export interface ProgressRecord {
+    id: number;
     status: 'completed' | 'missed' | 'upcoming';
     date: string;
 }
 
 export interface Participant {
-    id: number;
-    name: string;
+    id: string;
+    username: string;
     avatar: string;
     missedDays: number;
     totalPenalty: number;

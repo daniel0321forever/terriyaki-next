@@ -3,38 +3,49 @@
 import { Box, Typography, TextField, Button, Link } from '@mui/material';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { LogIn } from 'lucide-react';
+import { UserPlus } from 'lucide-react';
 
-import { login } from '@/lib/service/auth.service';
+import { register } from '@/lib/service/auth.service';
+
 import { useUserStore } from '@/lib/stores/auth.store';
-import { useGrindStore } from '@/lib/stores/grind.store';
-import { ERROR_CODE_INVALID_EMAIL, ERROR_CODE_INVALID_PASSWORD } from '@/config/error_code';
 
-
-export default function LoginPage() {
+export default function RegisterPage() {
   const router = useRouter();
-  const setUser = useUserStore((state: any) => state.setUser);
-  const setGrind = useGrindStore((state: any) => state.setCurrentGrind);
+
+  const [isRegistering, setIsRegistering] = useState(false);
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
 
-  const handleLogin = (e: React.FormEvent) => {
+  const setUser = useUserStore((state: any) => state.setUser);
+
+  const handleRegister = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validate passwords match
+    if (password !== confirmPassword) {
+      alert('Passwords do not match');
+      return;
+    }
 
-    login(email, password).then(({ user, currentGrind }) => {
+    setIsRegistering(true);
+
+    register(email, password, name).then((user) => {
       setUser(user);
-      setGrind(currentGrind);
       router.push('/grind/new');
     }).catch((error) => {
       switch (error.message) {
-        case ERROR_CODE_INVALID_EMAIL:
-          alert("Invalid email");
+        case "DUPLICATE_ENTRY":
+          alert("Email already in use");
           break;
-        case ERROR_CODE_INVALID_PASSWORD:
-          alert("Invalid password");
-          break;
+        default:
+          alert("Something went wrong");
       }
+    }).finally(() => {
+      setIsRegistering(false);
     });
+
   };
 
   return (
@@ -89,7 +100,7 @@ export default function LoginPage() {
             lineHeight: 1.1,
           }}
         >
-          Welcome Back
+          Get Started
         </Typography>
 
         {/* Subtitle */}
@@ -102,19 +113,46 @@ export default function LoginPage() {
             fontWeight: 400,
           }}
         >
-          Sign in to continue your grind
+          Create your account and start your grind
         </Typography>
 
-        {/* Login Form */}
+        {/* Register Form */}
         <Box
           component="form"
-          onSubmit={handleLogin}
+          onSubmit={handleRegister}
           sx={{
             display: 'flex',
             flexDirection: 'column',
             gap: 3,
           }}
         >
+          <TextField
+            label="Name"
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            required
+            fullWidth
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                backgroundColor: 'white',
+                borderRadius: '12px',
+                '& fieldset': {
+                  borderColor: '#e0e0e0',
+                },
+                '&:hover fieldset': {
+                  borderColor: '#FFC15E',
+                },
+                '&.Mui-focused fieldset': {
+                  borderColor: '#FFC15E',
+                },
+              },
+              '& .MuiInputLabel-root.Mui-focused': {
+                color: '#FFC15E',
+              },
+            }}
+          />
+
           <TextField
             label="Email"
             type="email"
@@ -169,25 +207,36 @@ export default function LoginPage() {
             }}
           />
 
-          <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: -1 }}>
-            <Link
-              href="#"
-              sx={{
-                color: 'rgb(116, 116, 116)',
-                textDecoration: 'none',
-                fontSize: '0.9rem',
-                '&:hover': {
-                  color: '#FFC15E',
+          <TextField
+            label="Confirm Password"
+            type="password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            required
+            fullWidth
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                backgroundColor: 'white',
+                borderRadius: '12px',
+                '& fieldset': {
+                  borderColor: '#e0e0e0',
                 },
-                transition: 'color 0.2s',
-              }}
-            >
-              Forgot password?
-            </Link>
-          </Box>
+                '&:hover fieldset': {
+                  borderColor: '#FFC15E',
+                },
+                '&.Mui-focused fieldset': {
+                  borderColor: '#FFC15E',
+                },
+              },
+              '& .MuiInputLabel-root.Mui-focused': {
+                color: '#FFC15E',
+              },
+            }}
+          />
 
           <Button
             type="submit"
+            disabled={isRegistering}
             variant="contained"
             fullWidth
             sx={{
@@ -211,8 +260,8 @@ export default function LoginPage() {
               gap: 1,
             }}
           >
-            <LogIn size={20} />
-            Sign In
+            <UserPlus size={20} />
+            Sign Up
           </Button>
 
           <Box sx={{ textAlign: 'center', mt: 2 }}>
@@ -223,9 +272,9 @@ export default function LoginPage() {
                 fontSize: '0.95rem',
               }}
             >
-              Don't have an account?{' '}
+              Already have an account?{' '}
               <Link
-                href="/register"
+                href="/login"
                 sx={{
                   color: '#FFC15E',
                   textDecoration: 'none',
@@ -235,7 +284,7 @@ export default function LoginPage() {
                   },
                 }}
               >
-                Sign up
+                Sign in
               </Link>
             </Typography>
           </Box>

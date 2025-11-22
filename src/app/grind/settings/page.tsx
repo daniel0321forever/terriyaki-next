@@ -2,11 +2,12 @@
 
 import { Box, Typography, Switch, Avatar, Divider } from '@mui/material';
 import { SettingsIcon } from 'lucide-react';
-import { useParams } from 'next/navigation';
 import CustomAppBar from '@/app/components/appBar';
 import BackButton from '@/app/components/BackButton';
-import { useState, useEffect } from 'react';
-import { useGrindStore } from '@/lib/stores/grindStore';
+import { useState } from 'react';
+import { useGrindStore } from '@/lib/stores/grind.store';
+import { Participant } from '@/types/grind.types';
+import { useUserStore } from '@/lib/stores/auth.store';
 
 function ToggleOption({ title, checked, onChange }: { title: string, checked: boolean, onChange: () => void }) {
   return (
@@ -45,20 +46,11 @@ function InfoCard({ title, description }: { title: string, description: string }
 }
 
 export default function GrindSettings() {
-  const params = useParams();
-  const grindId = parseInt(params.id as string);
-  const getGrindById = useGrindStore((state) => state.getGrindById);
-  const initialize = useGrindStore((state) => state.initialize);
-  const grind = getGrindById(grindId);
+  const grind = useGrindStore((state: any) => state.currentGrind);
   const [autoRenew, setAutoRenew] = useState(grind?.autoRenew || false);
-
-  useEffect(() => {
-    // Initialize store with mock data if empty
-    initialize();
-    if (grind) {
-      setAutoRenew(grind.autoRenew);
-    }
-  }, [initialize, grind]);
+  
+  const currentUser = useUserStore((state: any) => state.user);
+  const currentUserParticipant = grind?.participants.find((participant: Participant) => participant.id === currentUser?.id);
 
   if (!grind) {
     return (
@@ -74,7 +66,7 @@ export default function GrindSettings() {
       <CustomAppBar />
       <Box sx={{ display: 'flex', flexDirection: 'column', pt: '100px', px: '100px', maxWidth: '800px', mx: 'auto' }}>
         {/* Back Button */}
-        <BackButton href={`/grind/${grindId}`} />
+        <BackButton href={`/grind`} />
 
         {/* Header */}
         <Typography
@@ -106,23 +98,8 @@ export default function GrindSettings() {
             Group Members
           </Typography>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-            {/* Current User */}
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-              <Avatar
-                src={grind.currentUser.avatar}
-                sx={{ width: 48, height: 48 }}
-              />
-              <Box>
-                <Typography variant="body1" sx={{ fontWeight: 500, fontSize: '1rem', color: 'text.primary' }}>
-                  You
-                </Typography>
-                <Typography variant="body2" sx={{ color: 'grey.600', fontSize: '0.9rem' }}>
-                  Missed {grind.currentUser.missedDays} Times • -${grind.currentUser.totalPenalty}
-                </Typography>
-              </Box>
-            </Box>
             {/* Other Participants */}
-            {grind.participants.map((participant) => (
+            {grind.participants.map((participant: Participant) => (
               <Box key={participant.id} sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                 <Avatar
                   src={participant.avatar}
@@ -130,7 +107,7 @@ export default function GrindSettings() {
                 />
                 <Box>
                   <Typography variant="body1" sx={{ fontWeight: 500, fontSize: '1rem', color: 'text.primary' }}>
-                    {participant.name}
+                    {participant.username}
                   </Typography>
                   <Typography variant="body2" sx={{ color: 'grey.600', fontSize: '0.9rem' }}>
                     Missed {participant.missedDays} Times • -${participant.totalPenalty}
@@ -157,7 +134,7 @@ export default function GrindSettings() {
         <Box sx={{ mb: 4 }}>
           <InfoCard 
             title="Punishment" 
-            description={`Initial Price: $${grind.punishment.initialPrice} • Daily Rate: $${grind.punishment.dailyRate}/day`}
+            description={`Initial Price: $${grind.budget} | Daily Penalty: $${Math.round(grind.budget / grind.duration)}/day`}
           />
         </Box>
       </Box>

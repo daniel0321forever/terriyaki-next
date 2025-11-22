@@ -173,31 +173,6 @@ function LeetCodeTaskDetail({ task }: { task: Task }) {
   );
 }
 
-function GRETaskDetail({ task }: { task: Task }) {
-  return (
-    <Box sx={{ p: 4 }}>
-      <Typography variant="h3" sx={{ fontSize: '2.5rem', fontWeight: 600, mb: 3, color: 'text.primary' }}>
-        {task.title}
-      </Typography>
-      
-      <Typography variant="body1" sx={{ fontSize: '1.1rem', color: 'text.secondary', mb: 4 }}>
-        GRE task interface coming soon...
-      </Typography>
-      
-      <Box sx={{ 
-        bgcolor: '#f5f5f5', 
-        p: 3, 
-        borderRadius: '12px',
-        border: '2px dashed #ddd'
-      }}>
-        <Typography variant="body2" sx={{ color: 'text.secondary', textAlign: 'center' }}>
-          Temporary placeholder for GRE task interface
-        </Typography>
-      </Box>
-    </Box>
-  );
-}
-
 export default function TaskPage() {
   const [selectedTaskId, setSelectedTaskId] = useState<number>(1);
   
@@ -237,7 +212,6 @@ export default function TaskPage() {
         {/* Right Content Area */}
         <Box sx={{ flex: 1, bgcolor: 'background.default' }}>
           {selectedTask?.type === 'LeetCode' && <LeetCodeTaskDetail task={selectedTask} />}
-          {selectedTask?.type === 'GRE' && <GRETaskDetail task={selectedTask} />}
           {!selectedTask && (
             <Box sx={{ p: 4 }}>
               <Typography variant="h6" sx={{ color: 'text.secondary' }}>

@@ -6,8 +6,11 @@ import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
 import { Plus, ArrowLeft, X } from 'lucide-react';
 import CustomAppBar from '@/app/components/appBar';
-import { useGrindStore } from '@/lib/stores/grindStore';
+import { useGrindStore } from '@/lib/stores/grind.store';
 import { Task } from '@/types/task.types';
+import { useUserStore } from '@/lib/stores/auth.store';
+import { User } from '@/types/user.types';
+import { createGrind } from '@/lib/service/grind.service';
 
 type DurationOption = '1 week' | '2 weeks' | '3 weeks' | '1 month';
 
@@ -20,24 +23,21 @@ const DURATION_OPTIONS: { value: DurationOption; days: number }[] = [
 
 export default function NewGrindPage() {
   const router = useRouter();
-  const addGrind = useGrindStore((state) => state.addGrind);
-  const initialize = useGrindStore((state) => state.initialize);
+  const setCurrentGrind = useGrindStore((state: any) => state.setCurrentGrind);
+  const user: User | null = useUserStore((state: any) => state.user);
   
   // Form state
   const [durationOption, setDurationOption] = useState<DurationOption>('1 month');
   const [taskType, setTaskType] = useState<'LeetCode'>('LeetCode');
-  const [weeklyBudget, setWeeklyBudget] = useState(300);
-  const [autoRenew, setAutoRenew] = useState(false);
-  const [weeklyTest, setWeeklyTest] = useState(true);
-  const [participants, setParticipants] = useState<string[]>([]);
+  const [startDate, setStartDate] = useState<string>(() => {
+    const today = new Date();
+    return today.toISOString().split('T')[0];
+  });
+  const [budget, setBudget] = useState(300);
+  const [participants, setParticipants] = useState<string[]>( user ? [user.email] : []);
   const [newParticipant, setNewParticipant] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  useEffect(() => {
-    // Initialize store with mock data if empty
-    initialize();
-  }, [initialize]);
 
   const getDurationDays = () => {
     return DURATION_OPTIONS.find(opt => opt.value === durationOption)?.days || 28;
@@ -51,6 +51,11 @@ export default function NewGrindPage() {
   };
 
   const handleRemoveParticipant = (participant: string) => {
+    if (participant === user?.email) {
+      alert('You cannot remove yourself from the grind');
+      return;
+    }
+
     setParticipants(participants.filter(p => p !== participant));
   };
 
@@ -60,7 +65,7 @@ export default function NewGrindPage() {
     setIsSubmitting(true);
 
     // Validation
-    if (weeklyBudget < 0) {
+    if (budget < 0) {
       setError('Weekly budget must be non-negative');
       setIsSubmitting(false);
       return;
@@ -68,37 +73,10 @@ export default function NewGrindPage() {
 
     try {
       const duration = getDurationDays();
-      
-      // Create default task object
-      const task: Task = {
-        id: Date.now(),
-        type: taskType,
-        title: 'LeetCode Problem',
-        description: 'Complete daily LeetCode problem',
-      };
-
-      // Calculate daily rate from weekly budget (weekly budget / 7 days)
-      const dailyRate = weeklyBudget / 7;
-      // Initial price is the weekly budget
-      const initialPrice = weeklyBudget;
-
-      // Create the grind
-      const newGrind = addGrind({
-        title: '',
-        description: '',
-        duration,
-        taskToday: task,
-        punishment: {
-          dailyRate,
-          initialPrice,
-        },
-        autoRenew,
-        weeklyTest,
-      });
-
-      // Navigate to the new grind's page
-      // TODO: creare a new grind id and navigate to it
-      router.push(`/grind/1`);
+      const startDateObj = new Date(startDate);
+      const grind = await createGrind(duration, startDateObj, budget, participants);
+      setCurrentGrind(grind);
+      router.push(`/grind`);
     } catch (err) {
       setError('Failed to create grind. Please try again.');
       setIsSubmitting(false);
@@ -107,7 +85,7 @@ export default function NewGrindPage() {
 
   const calculateTotalPrice = () => {
     const weeks = getDurationDays() / 7;
-    return weeks * weeklyBudget;
+    return weeks * budget;
   };
 
   return (
@@ -214,6 +192,49 @@ export default function NewGrindPage() {
                   <MenuItem value="LeetCode">LeetCode</MenuItem>
                 </Select>
               </FormControl>
+
+              {/* Start Date */}
+              <Box>
+                <Typography
+                  variant="body1"
+                  sx={{
+                    fontSize: '1rem',
+                    fontWeight: 600,
+                    color: 'rgb(0, 0, 0)',
+                    mb: 1.5,
+                  }}
+                >
+                  Start Date
+                </Typography>
+                <TextField
+                  type="date"
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                  fullWidth
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                  sx={{
+                    '& .MuiOutlinedInput-root': {
+                      backgroundColor: 'white',
+                      borderRadius: '12px',
+                      border: '1px solid #e0e0e0',
+                      '& fieldset': {
+                        borderColor: '#e0e0e0',
+                      },
+                      '&:hover fieldset': {
+                        borderColor: '#FFC15E',
+                      },
+                      '&.Mui-focused fieldset': {
+                        borderColor: '#FFC15E',
+                      },
+                    },
+                    '& .MuiInputLabel-root.Mui-focused': {
+                      color: '#FFC15E',
+                    },
+                  }}
+                />
+              </Box>
 
               {/* Add Participants */}
               <Box>
@@ -407,8 +428,8 @@ export default function NewGrindPage() {
                 </Typography>
                 <TextField
                   type="number"
-                  value={weeklyBudget}
-                  onChange={(e) => setWeeklyBudget(parseFloat(e.target.value) || 0)}
+                  value={budget}
+                  onChange={(e) => setBudget(parseFloat(e.target.value) || 0)}
                   fullWidth
                   inputProps={{ min: 0, step: 0.01 }}
                   sx={{
@@ -499,7 +520,7 @@ export default function NewGrindPage() {
                     fontSize: '0.9rem',
                   }}
                 >
-                  {getDurationDays() / 7} weeks × USD {weeklyBudget.toLocaleString()} = USD {calculateTotalPrice().toLocaleString()}
+                  {getDurationDays() / 7} weeks × USD {budget.toLocaleString()} = USD {calculateTotalPrice().toLocaleString()}
                 </Typography>
               </Box>
             </Box>

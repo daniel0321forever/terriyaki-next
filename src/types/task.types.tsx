@@ -3,4 +3,6 @@ export interface Task {
     type: 'LeetCode' | 'GRE';
     title: string;
     description: string;
+    code: string | null;
+    language: string | null;
 }

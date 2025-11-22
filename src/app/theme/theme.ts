@@ -3,20 +3,20 @@ import { createTheme } from '@mui/material/styles';
 export const theme = createTheme({
   palette: {
     primary: {
-      main: '#F7E4C5', // teal-500
-      dark: '#0f766e', // teal-700
+      main: '#F7E4C5',
+      dark: '#0f766e',
     },
     secondary: {
-      main: '#FF9D00', // yellow-400
-      dark: '#f59e0b', // yellow-500
+      main: '#FF9D00',
+      dark: '#f59e0b',
     },
     success: {
-      main: '#84cc16', // lime-500
-      light: '#a3e635', // lime-400
+      main: '#84cc16',
+      light: '#a3e635',
     },
     warning: {
-      main: '#f97316', // orange-500
-      light: '#fb923c', // orange-400
+      main: '#f97316',
+      light: '#fb923c',
     },
     grey: {
       100: '#f3f4f6',
