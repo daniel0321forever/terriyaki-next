@@ -1,18 +1,23 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import {
   AppBar,
   Toolbar,
   IconButton,
   Box,
   Typography,
+  Menu,
+  MenuItem,
 } from '@mui/material';
 import {
   Home as HomeIcon,
   AccountCircle as AccountCircleIcon,
 } from '@mui/icons-material';
 import { useRouter } from 'next/navigation';
+import { logout } from '@/lib/service/auth.service';
+import { useUserStore } from '@/lib/stores/auth.store';
+import { useGrindStore } from '@/lib/stores/grind.store';
 
 interface AppBarProps {
   title?: string;
@@ -20,14 +25,42 @@ interface AppBarProps {
 
 const CustomAppBar: React.FC<AppBarProps> = () => {
   const router = useRouter();
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
+  const setUser = useUserStore((state: any) => state.setUser);
+  const setGrind = useGrindStore((state: any) => state.setCurrentGrind);
 
   const handleHomeClick = () => {
     router.push('/');
   };
 
-  const handleAccountClick = () => {
-    // You can customize this to navigate to account page or show account menu
-    console.log('Account button clicked');
+  const handleAccountClick = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleProfileClick = () => {
+    handleMenuClose();
+    router.push('/');
+  };
+
+  const handleLogoutClick = async () => {
+    handleMenuClose();
+    try {
+      await logout();
+      setUser(null);
+      setGrind(null);
+      router.push('/login');
+    } catch (error) {
+      console.error('Logout failed:', error);
+      // Even if logout fails, clear local state and redirect
+      setUser(null);
+      setGrind(null);
+      router.push('/login');
+    }
   };
 
   return (
@@ -49,6 +82,7 @@ const CustomAppBar: React.FC<AppBarProps> = () => {
           aria-label="home"
           sx={{
             color: 'black',
+            cursor: 'pointer',
             '&:hover': {
               color: 'grey.500',
             },
@@ -61,12 +95,16 @@ const CustomAppBar: React.FC<AppBarProps> = () => {
           <HomeIcon />
         </Box>
 
-        {/* Right side - Account button */}
+        {/* Right side - Account button with menu */}
         <Box
           onClick={handleAccountClick}
           aria-label="account"
+          aria-controls={open ? 'account-menu' : undefined}
+          aria-haspopup="true"
+          aria-expanded={open ? 'true' : undefined}
           sx={{
             color: 'black',
+            cursor: 'pointer',
             '&:hover': {
               color: 'grey.500',
             },
@@ -78,6 +116,48 @@ const CustomAppBar: React.FC<AppBarProps> = () => {
         >
           <AccountCircleIcon />
         </Box>
+        <Menu
+          id="account-menu"
+          anchorEl={anchorEl}
+          open={open}
+          onClose={handleMenuClose}
+          onClick={handleMenuClose}
+          PaperProps={{
+            elevation: 3,
+            sx: {
+              overflow: 'visible',
+              filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
+              mt: 1.5,
+              '& .MuiAvatar-root': {
+                width: 32,
+                height: 32,
+                ml: -0.5,
+                mr: 1,
+              },
+              '&:before': {
+                content: '""',
+                display: 'block',
+                position: 'absolute',
+                top: 0,
+                right: 14,
+                width: 10,
+                height: 10,
+                bgcolor: 'background.paper',
+                transform: 'translateY(-50%) rotate(45deg)',
+                zIndex: 0,
+              },
+            },
+          }}
+          transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+          anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+        >
+          <MenuItem onClick={handleProfileClick}>
+            <Typography>Profile</Typography>
+          </MenuItem>
+          <MenuItem onClick={handleLogoutClick}>
+            <Typography sx={{ color: 'error.main' }}>Logout</Typography>
+          </MenuItem>
+        </Menu>
       </Toolbar>
     </AppBar>
   );

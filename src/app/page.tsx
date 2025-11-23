@@ -17,6 +17,9 @@ import AnimatedTitle from '@/app/components/AnimatedTitle';
 import AnimatedIntro from '@/app/components/AnimatedIntro';
 import CustomAppBar from './components/appBar';
 import GrindPreview from './components/GrindPreview';
+import { quitGrind } from '@/lib/service/grind.service';
+import { Grind } from '@/types/grind.types';
+import { User } from '@/types/user.types';
 
 function LandingPageView() {
   return (
@@ -100,10 +103,9 @@ function LandingPageView() {
 
 function GrindHomePageView() {
   const router = useRouter();
-  const grind = useGrindStore((state: any) => state.currentGrind);
-  const user = useUserStore((state: any) => state.user);
+  const grind: Grind | null = useGrindStore((state: any) => state.currentGrind);
+  const user: User | null = useUserStore((state: any) => state.user);
 
-  // Find current user's participant record
   const currentUserParticipant = grind?.participants?.find(
     (participant: any) => participant.id === user?.id
   );
@@ -119,8 +121,15 @@ function GrindHomePageView() {
   };
 
   const handleQuit = () => {
-    // TODO: Implement quit grind functionality
-    console.log('Quit grind functionality to be implemented');
+    if (!grind) {
+      console.error("Grind not found");
+      return;
+    }
+    quitGrind(grind.id).then((data) => {
+      useGrindStore.setState({ currentGrind: null });
+    }).catch((error) => {
+      console.error("Failed to quit grind: ", error);
+    });
   };
 
   const handleCreate = () => {
@@ -128,7 +137,7 @@ function GrindHomePageView() {
   };
 
   const menuItems = [
-    { label: 'My Grind', icon: Target, path: '/grind', active: grind !== null },
+    { label: 'My Grind', icon: Target, path: '/mygrinds', active: grind !== null },
     { label: 'Progress', icon: TrendingUp, path: '/grind/progress', active: false },
   ];
 

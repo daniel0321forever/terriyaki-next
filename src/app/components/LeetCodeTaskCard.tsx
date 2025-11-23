@@ -14,142 +14,145 @@ import { InputLabel } from '@mui/material';
 import { Upload } from 'lucide-react';
 import Editor from '@monaco-editor/react';
 import { submitTask } from '@/lib/service/task.serivice';
+import { useGrindStore } from '@/lib/stores/grind.store';
 
 function UploadDialog({ task, open, onClose }: { task: Task, open: boolean, onClose: () => void }) {
-    const [code, setCode] = useState(task.code || '');
-    const [language, setLanguage] = useState(task.language || 'javascript');
-    
-    const languages = [
-      { value: 'javascript', label: 'JavaScript' },
-      { value: 'typescript', label: 'TypeScript' },
-      { value: 'python', label: 'Python' },
-      { value: 'java', label: 'Java' },
-      { value: 'cpp', label: 'C++' },
-      { value: 'c', label: 'C' },
-      { value: 'csharp', label: 'C#' },
-      { value: 'go', label: 'Go' },
-      { value: 'rust', label: 'Rust' },
-      { value: 'kotlin', label: 'Kotlin' },
-      { value: 'swift', label: 'Swift' },
-    ];
-    
-    const handleSubmit = () => {
-      submitTask(code, language);
-      onClose();
-    };
+  const currentGrind = useGrindStore((state: any) => state.currentGrind);
+  const [code, setCode] = useState(task.code || '');
+  const [language, setLanguage] = useState(task.language || 'javascript');
+  
+  const languages = [
+    { value: 'javascript', label: 'JavaScript' },
+    { value: 'typescript', label: 'TypeScript' },
+    { value: 'python', label: 'Python' },
+    { value: 'java', label: 'Java' },
+    { value: 'cpp', label: 'C++' },
+    { value: 'c', label: 'C' },
+    { value: 'csharp', label: 'C#' },
+    { value: 'go', label: 'Go' },
+    { value: 'rust', label: 'Rust' },
+    { value: 'kotlin', label: 'Kotlin' },
+    { value: 'swift', label: 'Swift' },
+  ];
+  
+  const handleSubmit = () => {
+    submitTask(code, language);
+    onClose();
+  };
 
-    return (
-      <Dialog 
-        open={open} 
-        onClose={onClose}
-        fullWidth
-        maxWidth="lg"
-        sx={{
-          '& .MuiDialog-paper': {
-            width: '65vw',
-            backgroundColor: 'rgb(61, 61, 61)',
-            color: 'white',
-          }
-        }}
-      >
-        <DialogTitle sx={{ fontSize: '1.5rem', fontWeight: 600, mt: 2 }}>
-          Submit Your Code
-        </DialogTitle>
-        <DialogContent>
-          <FormControl 
-            fullWidth 
-            sx={{ 
-              mb: 2, 
-              mt: 1,
-              '& .MuiOutlinedInput-root': {
-                '& fieldset': {
-                  borderColor: 'white',
-                },
-                '&:hover fieldset': {
-                  borderColor: '#FFC15E',
-                },
-              }
-            }}
-          >
-            <InputLabel id="language-select-label" sx={{ color: 'white' }}>Language</InputLabel>
-            <Select
-              labelId="language-select-label"
-              id="language-select"
-              value={language}
-              label="Language"
-              onChange={(e) => setLanguage(e.target.value)}
-              sx={{
-                textTransform: 'none',
+  return (
+    <Dialog 
+      open={open} 
+      onClose={onClose}
+      fullWidth
+      maxWidth="lg"
+      sx={{
+        '& .MuiDialog-paper': {
+          width: '65vw',
+          backgroundColor: 'rgb(61, 61, 61)',
+          color: 'white',
+        }
+      }}
+    >
+      <DialogTitle sx={{ fontSize: '1.5rem', fontWeight: 600, mt: 2 }}>
+        Submit Your Code
+      </DialogTitle>
+      <DialogContent>
+        <FormControl 
+          fullWidth 
+          sx={{ 
+            mb: 2, 
+            mt: 1,
+            '& .MuiOutlinedInput-root': {
+              '& fieldset': {
+                borderColor: 'white',
+              },
+              '&:hover fieldset': {
+                borderColor: '#FFC15E',
+              },
+            }
+          }}
+        >
+          <InputLabel id="language-select-label" sx={{ color: 'white' }}>Language</InputLabel>
+          <Select
+            labelId="language-select-label"
+            id="language-select"
+            value={language}
+            label="Language"
+            onChange={(e) => setLanguage(e.target.value)}
+            sx={{
+              textTransform: 'none',
+              color: 'white',
+              '& .MuiSelect-icon': {
                 color: 'white',
-                '& .MuiSelect-icon': {
-                  color: 'white',
-                },
-              }}
-            >
-              {languages.map((lang) => (
-                <MenuItem key={lang.value} value={lang.value}>
-                  {lang.label}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-          <Box sx={{ 
-            border: '1px solid',
-            borderColor: 'divider',
-            borderRadius: 1,
-            overflow: 'hidden',
-          }}>
-            <Editor
-              height="400px"
-              language={language}
-              value={code}
-              onChange={(value) => setCode(value || '')}
-              theme="vs-white"
-              options={{
-                minimap: { enabled: false },
-                fontSize: 14,
-                lineNumbers: 'on',
-                scrollBeyondLastLine: false,
-                automaticLayout: true,
-                tabSize: 2,
-                wordWrap: 'on',
-                padding: { top: 16, bottom: 16 },
-                suggestOnTriggerCharacters: true,
-                quickSuggestions: true,
-              }}
-            />
-          </Box>
-        </DialogContent>
-        <DialogActions sx={{ px: 3, pb: 3 }}>
-          <Button 
-            onClick={onClose}
-            sx={{ 
-              color: 'text.secondary',
-              textTransform: 'none',
-              fontSize: '1rem',
+              },
             }}
           >
-            Cancel
-          </Button>
-          <Button 
-            onClick={handleSubmit}
-            variant="contained"
-            sx={{ 
-              bgcolor: 'orange',
-              textTransform: 'none',
-              fontSize: '1rem',
-              fontWeight: 600,
-              px: 3,
-              '&:hover': {
-                bgcolor: '#FFC15E',
-              }
+            {languages.map((lang) => (
+              <MenuItem key={lang.value} value={lang.value}>
+                {lang.label}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+        <Box sx={{ 
+          border: '1px solid',
+          borderColor: 'divider',
+          borderRadius: 1,
+          overflow: 'hidden',
+        }}>
+          <Editor
+            height="400px"
+            language={language}
+            value={code}
+            onChange={(value) => setCode(value || '')}
+            theme="vs-white"
+            options={{
+              minimap: { enabled: false },
+              fontSize: 14,
+              lineNumbers: 'on',
+              scrollBeyondLastLine: false,
+              automaticLayout: true,
+              tabSize: 2,
+              wordWrap: 'on',
+              padding: { top: 16, bottom: 16 },
+              suggestOnTriggerCharacters: true,
+              quickSuggestions: true,
             }}
-          >
-            Submit
-          </Button>
-        </DialogActions>
-      </Dialog>
-    );
+          />
+        </Box>
+      </DialogContent>
+      <DialogActions sx={{ px: 3, pb: 3 }}>
+        <Button 
+          onClick={onClose}
+          sx={{ 
+            bgcolor: 'rgba(79, 79, 79, 0.86)',
+            color: 'text.white',
+            textTransform: 'none',
+            fontSize: '1rem',
+          }}
+        >
+          Cancel
+        </Button>
+        <Button 
+          onClick={handleSubmit}
+          variant="contained"
+          sx={{ 
+            bgcolor: 'orange',
+            textTransform: 'none',
+            fontSize: '1rem',
+            fontWeight: 600,
+            px: 3,
+            '&:hover': {
+              bgcolor: '#FFC15E',
+            }
+          }}
+        >
+          Submit
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
 }
 
 export default function LeetCodeTaskCard({ task }: { task: Task }) {

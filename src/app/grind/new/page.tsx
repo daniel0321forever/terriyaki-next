@@ -11,6 +11,7 @@ import { Task } from '@/types/task.types';
 import { useUserStore } from '@/lib/stores/auth.store';
 import { User } from '@/types/user.types';
 import { createGrind } from '@/lib/service/grind.service';
+import { ERROR_CODE_USER_NOT_FOUND } from '@/config/error_code';
 
 type DurationOption = '1 week' | '2 weeks' | '3 weeks' | '1 month';
 
@@ -26,6 +27,9 @@ export default function NewGrindPage() {
   const setCurrentGrind = useGrindStore((state: any) => state.setCurrentGrind);
   const user: User | null = useUserStore((state: any) => state.user);
   
+  // Current user email - static value, not affected by useState
+  const currentUserEmail = user?.email || '';
+  
   // Form state
   const [durationOption, setDurationOption] = useState<DurationOption>('1 month');
   const [taskType, setTaskType] = useState<'LeetCode'>('LeetCode');
@@ -34,29 +38,46 @@ export default function NewGrindPage() {
     return today.toISOString().split('T')[0];
   });
   const [budget, setBudget] = useState(300);
-  const [participants, setParticipants] = useState<string[]>( user ? [user.email] : []);
+  // Only store additional participants (excluding current user)
+  const [additionalParticipants, setAdditionalParticipants] = useState<string[]>([]);
   const [newParticipant, setNewParticipant] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  // Combined participants list (current user + additional participants)
+  const allParticipants = currentUserEmail 
+    ? [currentUserEmail, ...additionalParticipants]
+    : additionalParticipants;
 
   const getDurationDays = () => {
     return DURATION_OPTIONS.find(opt => opt.value === durationOption)?.days || 28;
   };
 
   const handleAddParticipant = () => {
-    if (newParticipant.trim() && !participants.includes(newParticipant.trim())) {
-      setParticipants([...participants, newParticipant.trim()]);
-      setNewParticipant('');
+    const trimmedParticipant = newParticipant.trim();
+    
+    if (!trimmedParticipant) {
+      return;
     }
+    
+    // Check for conflicts including current user
+    if (allParticipants.includes(trimmedParticipant)) {
+      setError('This participant is already in the group');
+      return;
+    }
+    
+    setAdditionalParticipants([...additionalParticipants, trimmedParticipant]);
+    setNewParticipant('');
+    setError(null);
   };
 
   const handleRemoveParticipant = (participant: string) => {
-    if (participant === user?.email) {
-      alert('You cannot remove yourself from the grind');
+    // Current user cannot be removed
+    if (participant === currentUserEmail) {
       return;
     }
 
-    setParticipants(participants.filter(p => p !== participant));
+    setAdditionalParticipants(additionalParticipants.filter(p => p !== participant));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -74,10 +95,18 @@ export default function NewGrindPage() {
     try {
       const duration = getDurationDays();
       const startDateObj = new Date(startDate);
-      const grind = await createGrind(duration, startDateObj, budget, participants);
+      // Submit with all participants (current user + additional)
+      const grind = await createGrind(duration, startDateObj, budget, allParticipants);
       setCurrentGrind(grind);
       router.push(`/grind`);
-    } catch (err) {
+    } catch (err: any) {
+      switch (err.message) {
+        case ERROR_CODE_USER_NOT_FOUND:
+          setError('Participant not found');
+          break;
+        default:
+          setError('Failed to create grind. Please try again.');
+      }
       setError('Failed to create grind. Please try again.');
       setIsSubmitting(false);
     }
@@ -297,26 +326,34 @@ export default function NewGrindPage() {
                 </Box>
                 
                 {/* Participants List */}
-                {participants.length > 0 && (
+                {allParticipants.length > 0 && (
                   <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                    {participants.map((participant) => (
-                      <Chip
-                        key={participant}
-                        label={participant}
-                        onDelete={() => handleRemoveParticipant(participant)}
-                        deleteIcon={<X size={16} />}
-                        sx={{
-                          backgroundColor: 'rgba(255, 193, 94, 0.1)',
-                          color: 'rgb(59, 37, 0)',
-                          '& .MuiChip-deleteIcon': {
-                            color: 'rgb(59, 37, 0)',
-                            '&:hover': {
-                              color: 'rgb(0, 0, 0)',
+                    {allParticipants.map((participant) => {
+                      const isCurrentUser = participant === currentUserEmail;
+                      return (
+                        <Chip
+                          key={participant}
+                          label={participant}
+                          onDelete={isCurrentUser ? undefined : () => handleRemoveParticipant(participant)}
+                          deleteIcon={isCurrentUser ? undefined : <X size={16} />}
+                          sx={{
+                            backgroundColor: isCurrentUser 
+                              ? 'rgba(79, 79, 79, 0.2)' 
+                              : 'rgba(255, 193, 94, 0.1)',
+                            color: isCurrentUser 
+                              ? 'rgb(0, 0, 0)' 
+                              : 'rgb(59, 37, 0)',
+                            fontWeight: isCurrentUser ? 600 : 400,
+                            '& .MuiChip-deleteIcon': {
+                              color: 'rgb(59, 37, 0)',
+                              '&:hover': {
+                                color: 'rgb(0, 0, 0)',
+                              },
                             },
-                          },
-                        }}
-                      />
-                    ))}
+                          }}
+                        />
+                      );
+                    })}
                   </Box>
                 )}
               </Box>

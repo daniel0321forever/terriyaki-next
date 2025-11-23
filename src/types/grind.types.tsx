@@ -8,6 +8,7 @@ export interface Grind {
     budget: number;
     progress: ProgressRecord[];
     participants: Participant[];
+    quit: boolean;
 }
 
 export interface ProgressRecord {
