@@ -11,6 +11,7 @@ import { Select } from '@mui/material';
 import { MenuItem } from '@mui/material';
 import { FormControl } from '@mui/material';
 import { InputLabel } from '@mui/material';
+import { Chip } from '@mui/material';
 import { Upload } from 'lucide-react';
 import Editor from '@monaco-editor/react';
 import { submitTask } from '@/lib/service/task.serivice';
@@ -167,6 +168,19 @@ export default function LeetCodeTaskCard({ task }: { task: Task }) {
     setUploadDialogOpen(false);
   };
 
+  const getDifficultyColor = (difficulty: 'Easy' | 'Medium' | 'Hard') => {
+    switch (difficulty) {
+      case 'Easy':
+        return 'rgb(137, 216, 51)';
+      case 'Medium':
+        return 'rgb(255, 217, 0)';
+      case 'Hard':
+        return 'rgb(255, 107, 99)';
+      default:
+        return 'rgb(255, 193, 94)';
+    }
+  };
+
   return (
     <Box sx={{ p: 4, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
       
@@ -178,31 +192,93 @@ export default function LeetCodeTaskCard({ task }: { task: Task }) {
         TODAY
       </Typography>
 
-      {/* LeetCode Problem Link */}
-      <Box
-        sx={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          fontSize: '2rem',
-          fontWeight: 500,
-          mb: 3,
-          color: 'rgb(59, 37, 0)',
-          background: 'none',
-          border: 'none',
-          outline: 'none',
-          cursor: 'pointer',
-          textAlign: 'center',
-          p: 0,
-          transition: 'color 0.2s',
-          '&:hover': {
-            color: '#FFC15E',
-          }
-        }}
-        onClick={() => {/* you can add action here if needed */}}
-      >
-        {task.title}
+      {/* Title with Difficulty Badge */}
+      <Box sx={{ 
+        display: 'flex', 
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 2,
+        mb: 2,
+        flexWrap: 'wrap'
+      }}>
+        {/* Difficulty Badge */}
+        <Chip
+          label={task.difficulty}
+          sx={{
+            bgcolor: getDifficultyColor(task.difficulty),
+            color: 'white',
+            fontWeight: 600,
+            fontSize: '0.9rem',
+            px: 1,
+            height: '32px',
+            '& .MuiChip-label': {
+              px: 2,
+            }
+          }}
+        />
+
+        {/* LeetCode Problem Link */}
+        <a
+          href={task.url ?? ''}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{ 
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: '2rem',
+            fontWeight: 500,
+            color: 'rgb(59, 37, 0)',
+            background: 'none',
+            border: 'none',
+            outline: 'none',
+            cursor: 'pointer',
+            textAlign: 'center',
+            padding: 0,
+            textDecoration: 'none',
+            transition: 'color 0.2s'
+          }}
+          onMouseOver={e => (e.currentTarget.style.color = '#FFC15E')}
+          onMouseOut={e => (e.currentTarget.style.color = 'rgb(59, 37, 0)')}
+        >
+          {task.title}
+        </a>
       </Box>
+
+      {/* Tags */}
+      {task.topicTags && task.topicTags.length > 0 && (
+        <Box sx={{ 
+          display: 'flex', 
+          flexWrap: 'wrap', 
+          gap: 1, 
+          justifyContent: 'center',
+          mb: 3,
+          px: 2,
+          maxWidth: '800px'
+        }}>
+          {task.topicTags.map((tag, index) => (
+            <Chip
+              key={index}
+              label={tag}
+              sx={{
+                bgcolor: 'rgba(255, 193, 94, 0.15)',
+                color: 'rgb(59, 37, 0)',
+                border: '1px solid rgba(255, 193, 94, 0.3)',
+                fontWeight: 500,
+                fontSize: '0.85rem',
+                height: '28px',
+                '& .MuiChip-label': {
+                  px: 1.5,
+                },
+                '&:hover': {
+                  bgcolor: 'rgba(255, 193, 94, 0.25)',
+                  borderColor: 'rgba(255, 193, 94, 0.5)',
+                }
+              }}
+            />
+          ))}
+        </Box>
+      )}
 
       {/* LeetCode Problem Description */}
       <Typography variant="body1" sx={{ fontSize: '1.1rem', color: 'rgb(116, 116, 116)', mb: 4, px: 6 }}>

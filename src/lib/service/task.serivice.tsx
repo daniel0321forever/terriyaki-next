@@ -33,7 +33,7 @@ export async function submitTask(code: string, language: string) {
 }
 
 export async function getTaskDetail(taskId: number) {
-    const res = await fetch(`${API_BASE}/v1/tasks/${taskId}`, {
+    const res = await fetch(`${API_BASE}/v1/tasks/${taskId}?set-problem=false`, {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
