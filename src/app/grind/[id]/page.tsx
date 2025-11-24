@@ -16,7 +16,7 @@ import { Task } from '@/types/task.types';
 
 import ProgressGrid from '@/app/components/ProgressGrid';
 import BackButton from '@/app/components/BackButton';
-import CustomAppBar from '@/app/components/appBar';
+import CustomAppBar from '@/app/components/CustomAppBar';
 
 
 export default function GrindProgress() {

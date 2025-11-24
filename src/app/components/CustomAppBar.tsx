@@ -4,7 +4,6 @@ import React, { useState } from 'react';
 import {
   AppBar,
   Toolbar,
-  IconButton,
   Box,
   Typography,
   Menu,
@@ -18,6 +17,7 @@ import { useRouter } from 'next/navigation';
 import { logout } from '@/lib/service/auth.service';
 import { useUserStore } from '@/lib/stores/auth.store';
 import { useGrindStore } from '@/lib/stores/grind.store';
+import MessageIcon from './MessageIcon';
 
 interface AppBarProps {
   title?: string;
@@ -95,27 +95,35 @@ const CustomAppBar: React.FC<AppBarProps> = () => {
           <HomeIcon />
         </Box>
 
-        {/* Right side - Account button with menu */}
-        <Box
-          onClick={handleAccountClick}
-          aria-label="account"
-          aria-controls={open ? 'account-menu' : undefined}
-          aria-haspopup="true"
-          aria-expanded={open ? 'true' : undefined}
-          sx={{
-            color: 'black',
-            cursor: 'pointer',
-            '&:hover': {
-              color: 'grey.500',
-            },
-            transition: 'all 0.2s ease-in-out',
-            '& svg': {
-              fontSize: '2.5rem',
-            },
-          }}
-        >
-          <AccountCircleIcon />
+        {/* Right side - Message and Account buttons */}
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          {/* Message button */}
+          <MessageIcon />
+
+          {/* Account button */}
+          <Box
+            onClick={handleAccountClick}
+            aria-label="account"
+            aria-controls={open ? 'account-menu' : undefined}
+            aria-haspopup="true"
+            aria-expanded={open ? 'true' : undefined}
+            sx={{
+              color: 'black',
+              cursor: 'pointer',
+              '&:hover': {
+                color: 'grey.500',
+              },
+              transition: 'all 0.2s ease-in-out',
+              '& svg': {
+                fontSize: '2.5rem',
+              },
+            }}
+          >
+            <AccountCircleIcon />
+          </Box>
         </Box>
+
+        {/* Account Menu */}
         <Menu
           id="account-menu"
           anchorEl={anchorEl}

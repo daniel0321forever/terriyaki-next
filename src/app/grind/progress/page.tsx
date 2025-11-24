@@ -1,9 +1,10 @@
 'use client';
 
-import { Box, Typography, Avatar, Divider, Card, CardContent, Tooltip, CircularProgress, Alert } from '@mui/material';
+import { Box, Typography, Avatar, Divider, Card, CardContent, CircularProgress, Alert } from '@mui/material';
 import ProgressGrid from '@/app/components/ProgressGrid';
-import CustomAppBar from '@/app/components/appBar';
+import CustomAppBar from '@/app/components/CustomAppBar';
 import BackButton from '@/app/components/BackButton';
+import UserAvatarSelector from '@/app/grind/progress/components/UserAvatarSelector';
 import { useState, useRef } from 'react';
 import { useGrindStore } from '@/lib/stores/grind.store';
 import { Participant, ProgressRecord } from '@/types/grind.types';
@@ -99,76 +100,11 @@ export default function GrindProgress() {
       <CustomAppBar />
       <Box sx={{ display: 'flex', pt: '100px', pl: '16vw', gap: 4 }}>
         {/* Left Sidebar - Avatar Column */}
-        <Box 
-          sx={{ 
-            display: 'flex', 
-            flexDirection: 'column', 
-            gap: 3,
-            alignItems: 'center',
-            minWidth: '120px',
-            pt: 8,
-          }}
-        >
-          {allUsers.map((user) => {
-            const isSelected = user.id === selectedUserId;
-            return (
-              <Tooltip
-                key={user.id}
-                title={
-                  <Box sx={{ p: 1 }}>
-                    <Typography variant="body2" sx={{ fontWeight: 600, mb: 0.5 }}>
-                      {user.username}
-                    </Typography>
-                    <Typography variant="caption" sx={{ display: 'block', mb: 0.5 }}>
-                      Missed: {user.missedDays} days
-                    </Typography>
-                    <Typography variant="caption" sx={{ display: 'block' }}>
-                      Penalty: -${user.totalPenalty}
-                    </Typography>
-                  </Box>
-                }
-                placement="right"
-                arrow
-              >
-                <Box
-                  onClick={() => setSelectedUserId(user.id)}
-                  sx={{
-                    position: 'relative',
-                    cursor: 'pointer',
-                    transition: 'transform 0.2s',
-                    '&:hover': {
-                      transform: 'scale(1.1)',
-                    }
-                  }}
-                >
-                  <Avatar
-                    src={user.avatar}
-                    sx={{ 
-                      width: 64, 
-                      height: 64,
-                      border: isSelected ? '3px solid #4ade80' : '3px solid transparent',
-                      transition: 'border-color 0.2s',
-                    }}
-                  />
-                  {isSelected && (
-                    <Box
-                      sx={{
-                        position: 'absolute',
-                        bottom: -4,
-                        left: '50%',
-                        transform: 'translateX(-50%)',
-                        width: 6,
-                        height: 6,
-                        borderRadius: '50%',
-                        bgcolor: '#4ade80',
-                      }}
-                    />
-                  )}
-                </Box>
-              </Tooltip>
-            );
-          })}
-        </Box>
+        <UserAvatarSelector
+          users={allUsers}
+          selectedUserId={selectedUserId}
+          onSelect={setSelectedUserId}
+        />
 
         {/* Right Content - Selected User's Progress */}
         <Box sx={{ flex: 1, maxWidth: '800px' }}>

@@ -5,7 +5,7 @@ import { AlertTriangle, Upload, RefreshCcw } from 'lucide-react';
 import { useState, useRef } from 'react';
 import { MOCK_GRINDS } from '@/data/mockData';
 import { Task } from '@/types/task.types';
-import CustomAppBar from '@/app/components/appBar';
+import CustomAppBar from '@/app/components/CustomAppBar';
 
 function TaskCard({ task, isActive, onClick, hasWarning }: { 
   task: Task; 

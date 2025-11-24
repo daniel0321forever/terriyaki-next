@@ -12,8 +12,8 @@ import { ChevronRight } from 'lucide-react';
 import { Grind } from '@/types/grind.types';
 import { Participant } from '@/types/grind.types';
 
-import LeetCodeTaskCard from '@/app/components/LeetCodeTaskCard';
-import CustomAppBar from '@/app/components/appBar';
+import LeetCodeTaskCard from '@/app/grind/components/LeetCodeTaskCard';
+import CustomAppBar from '@/app/components/CustomAppBar';
 import ProgressGrid from '@/app/components/ProgressGrid';
 import UserCard from '@/app/components/UserCard';
 import { User } from '@/types/user.types';

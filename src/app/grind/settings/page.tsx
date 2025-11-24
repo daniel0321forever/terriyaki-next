@@ -2,7 +2,7 @@
 
 import { Box, Typography, Switch, Avatar, Divider } from '@mui/material';
 import { SettingsIcon } from 'lucide-react';
-import CustomAppBar from '@/app/components/appBar';
+import CustomAppBar from '@/app/components/CustomAppBar';
 import BackButton from '@/app/components/BackButton';
 import { useState } from 'react';
 import { useGrindStore } from '@/lib/stores/grind.store';

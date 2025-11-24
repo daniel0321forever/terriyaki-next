@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
 import { Plus, ArrowLeft, X } from 'lucide-react';
-import CustomAppBar from '@/app/components/appBar';
+import CustomAppBar from '@/app/components/CustomAppBar';
 import { useGrindStore } from '@/lib/stores/grind.store';
 import { Task } from '@/types/task.types';
 import { useUserStore } from '@/lib/stores/auth.store';
@@ -140,7 +140,7 @@ export default function NewGrindPage() {
             flexDirection: { xs: 'column', lg: 'row' },
           }}
         >
-          {/* Left Column - Group Participant Settings */}
+          {/* Left Column - Invite Participants */}
           <Box
             sx={{
               flex: 1,
@@ -170,7 +170,7 @@ export default function NewGrindPage() {
               </Typography>
             </motion.div>
 
-            {/* Group Participants Section */}
+            {/* Invite Participants Section */}
             <Box
               component="form"
               onSubmit={handleSubmit}
@@ -276,11 +276,11 @@ export default function NewGrindPage() {
                     mb: 1.5,
                   }}
                 >
-                  Group Participants
+                  Invite Participants
                 </Typography>
                 <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
                   <TextField
-                    placeholder="Add participant email or username"
+                    placeholder="Invite a participant by email"
                     value={newParticipant}
                     onChange={(e) => setNewParticipant(e.target.value)}
                     onKeyPress={(e) => {

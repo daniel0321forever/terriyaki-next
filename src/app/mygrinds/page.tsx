@@ -5,7 +5,7 @@ import { Box, Typography, Card, CardContent, Chip } from '@mui/material';
 import { motion } from 'framer-motion';
 import { Calendar, Clock, DollarSign, Target } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import CustomAppBar from '@/app/components/appBar';
+import CustomAppBar from '@/app/components/CustomAppBar';
 import BackButton from '@/app/components/BackButton';
 import { getGrinds } from '@/lib/service/grind.service';
 import { useGrindStore } from '@/lib/stores/grind.store';
