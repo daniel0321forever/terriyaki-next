@@ -43,11 +43,7 @@ export default function NewGrindPage() {
   const [newParticipant, setNewParticipant] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  
-  // Combined participants list (current user + additional participants)
-  const allParticipants = currentUserEmail 
-    ? [currentUserEmail, ...additionalParticipants]
-    : additionalParticipants;
+
 
   const getDurationDays = () => {
     return DURATION_OPTIONS.find(opt => opt.value === durationOption)?.days || 28;
@@ -61,7 +57,7 @@ export default function NewGrindPage() {
     }
     
     // Check for conflicts including current user
-    if (allParticipants.includes(trimmedParticipant)) {
+    if (additionalParticipants.includes(trimmedParticipant)) {
       setError('This participant is already in the group');
       return;
     }
@@ -96,7 +92,7 @@ export default function NewGrindPage() {
       const duration = getDurationDays();
       const startDateObj = new Date(startDate);
       // Submit with all participants (current user + additional)
-      const grind = await createGrind(duration, startDateObj, budget, allParticipants);
+      const grind = await createGrind(duration, startDateObj, budget, additionalParticipants);
       setCurrentGrind(grind);
       router.push(`/grind`);
     } catch (err: any) {
@@ -326,9 +322,9 @@ export default function NewGrindPage() {
                 </Box>
                 
                 {/* Participants List */}
-                {allParticipants.length > 0 && (
+                {additionalParticipants.length > 0 && (
                   <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                    {allParticipants.map((participant) => {
+                    {additionalParticipants.map((participant: string) => {
                       const isCurrentUser = participant === currentUserEmail;
                       return (
                         <Chip

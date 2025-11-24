@@ -1,6 +1,6 @@
 import Cookies from "js-cookie";
 import { Grind } from "@/types/grind.types";
-import { ERROR_CODE_BAD_REQUEST, ERROR_CODE_UNAUTHORIZED, ERROR_CODE_UNKNOWN, ERROR_CODE_USER_NOT_FOUND } from "@/config/error_code";
+import { ERROR_CODE_UNAUTHORIZED, ERROR_CODE_UNKNOWN } from "@/config/error_code";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL;
 
@@ -10,8 +10,6 @@ export async function createGrind(
     budget: number,
     participants: string[],
 ) {
-    console.log("Creating grind with duration: ", duration, "startDate: ", startDate, "budget: ", budget, "participants: ", participants);
-
     const res = await fetch(`${API_BASE}/v1/grinds`, {
         method: "POST",
         headers: {
@@ -24,7 +22,7 @@ export async function createGrind(
             budget,
             participants,
         }),
-    }); 
+    });
 
     switch (res.status) {
         case 200:

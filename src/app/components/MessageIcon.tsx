@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import {
   Box,
   Typography,
@@ -36,6 +36,10 @@ const MessageIcon: React.FC = () => {
 
   const messages: Message[] = useMessageStore((state: any) => state.messages);
   const setMessages = useMessageStore((state: any) => state.setMessages);
+
+  const unreadMessageCount = useMemo(() => {
+    return messages.filter((message: Message) => !message.read).length;
+  }, [messages]);
   
   const loadMessages = useCallback(async (page: number) => {
     setLoading(true);
@@ -151,7 +155,7 @@ const MessageIcon: React.FC = () => {
           },
         }}
       >
-        <Badge badgeContent={messages.length > 0 ? messages.length : undefined} color="error">
+        <Badge badgeContent={unreadMessageCount > 0 ? unreadMessageCount : undefined} color="error">
           <MailOutlineIcon />
         </Badge>
       </Box>
