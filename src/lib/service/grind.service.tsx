@@ -1,8 +1,7 @@
 import Cookies from "js-cookie";
 import { Grind } from "@/types/grind.types";
 import { ERROR_CODE_UNAUTHORIZED, ERROR_CODE_UNKNOWN } from "@/config/error_code";
-
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL;
+import { API_BASE, isDev } from "@/config/config";
 
 export async function createGrind(
     duration: number,
@@ -26,19 +25,30 @@ export async function createGrind(
 
     switch (res.status) {
         case 200:
-            var data = await res.json();
+            let data = await res.json();
+            if (isDev) {
+                console.log("status: ", res.status, "data: ", data);
+            }
             var grind: Grind = data.grind;
             return grind;
         case 400:
-            var data = await res.json();
-            console.log("status: ", res.status, "error: ", data);
+            if (isDev) {
+                let data = await res.json();
+                console.warn("status: ", res.status, "error: ", data);
+            }
             throw new Error(data.errorCode);
         case 401:
-            var data = await res.json();
+            if (isDev) {
+                let data = await res.json();
+                console.error("status: ", res.status, "error: ", data);
+            }
             console.log("status: ", res.status, "error: ", data);
             throw new Error(ERROR_CODE_UNAUTHORIZED);
         default:
-            var data = await res.json();
+            if (isDev) {
+                let data = await res.json();
+                console.error("status: ", res.status, "error: ", data);
+            }
             console.log("status: ", res.status, "error: ", data);
             throw new Error(ERROR_CODE_UNKNOWN);
     }
@@ -55,16 +65,23 @@ export async function getCurrentGrind() {
 
     switch (res.status) {
         case 200:
-            var data = await res.json();
-            var currentGrind: Grind = data.grind;
+            let data = await res.json();
+            if (isDev) {
+                console.log("status: ", res.status, "data: ", data);
+            }
+            const currentGrind: Grind = data.grind;
             return currentGrind;
         case 401:
-            var data = await res.json();
-            console.log("status: ", res.status, "error: ", data);
+            if (isDev) {
+                let data = await res.json();
+                console.warn("status: ", res.status, "error: ", data);
+            }
             throw new Error(ERROR_CODE_UNAUTHORIZED);
         default:
-            var data = await res.json();
-            console.log("status: ", res.status, "error: ", data);
+            if (isDev) {
+                let data = await res.json();
+                console.error("status: ", res.status, "error: ", data);
+            }
             throw new Error(ERROR_CODE_UNKNOWN);
     }
 }
@@ -80,16 +97,23 @@ export async function getGrindById(grindId: string) {
 
     switch (res.status) {
         case 200:
-            var data = await res.json();
-            var grind: Grind = data.grind;
+            let data = await res.json();
+            if (isDev) {
+                console.log("status: ", res.status, "data: ", data);
+            }
+            const grind: Grind = data.grind;
             return grind;
         case 401:
-            var data = await res.json();
-            console.log("status: ", res.status, "error: ", data);
+            if (isDev) {
+                let data = await res.json();
+                console.error("status: ", res.status, "error: ", data);
+            }
             throw new Error(ERROR_CODE_UNAUTHORIZED);
         default:
-            var data = await res.json();
-            console.log("status: ", res.status, "error: ", data);
+            if (isDev) {
+                let data = await res.json();
+                console.error("status: ", res.status, "error: ", data);
+            }
             throw new Error(ERROR_CODE_UNKNOWN);
     }
 }
@@ -105,16 +129,23 @@ export async function getGrinds() {
 
     switch (res.status) {
         case 200:
-            var data = await res.json();
-            var grinds: Grind[] = data.grinds;
+            let data = await res.json();
+            if (isDev) {
+                console.log("status: ", res.status, "data: ", data);
+            }
+            const grinds: Grind[] = data.grinds;
             return grinds;
         case 401:
-            var data = await res.json();
-            console.log("status: ", res.status, "error: ", data);
+            if (isDev) {
+                let data = await res.json();
+                console.error("status: ", res.status, "error: ", data);
+            }
             throw new Error(ERROR_CODE_UNAUTHORIZED);
         default:
-            var data = await res.json();
-            console.log("status: ", res.status, "error: ", data);
+            if (isDev) {
+                let data = await res.json();
+                console.error("status: ", res.status, "error: ", data);
+            }
             throw new Error(ERROR_CODE_UNKNOWN);
     }
 }
@@ -130,16 +161,22 @@ export async function quitGrind(grindId: number) {
 
     switch (res.status) {
         case 200:
-            var data = await res.json();
-            console.log("status: ", res.status, "data: ", data);
+            let data = await res.json();
+            if (isDev) {
+                console.log("status: ", res.status, "data: ", data);
+            }
             return data;
         case 401:
-            var data = await res.json();
-            console.log("status: ", res.status, "error: ", data);
+            if (isDev) {
+                let data = await res.json();
+                console.error("status: ", res.status, "error: ", data);
+            }
             throw new Error(ERROR_CODE_UNAUTHORIZED);
         default:
-            var data = await res.json();
-            console.log("status: ", res.status, "error: ", data);
+            if (isDev) {
+                let data = await res.json();
+                console.error("status: ", res.status, "error: ", data);
+            }
             throw new Error(ERROR_CODE_UNKNOWN);
     }
 }

@@ -1,4 +1,4 @@
-import { Grind, ProgressRecord } from "@/types/grind.types";
+import { Grind } from "@/types/grind.types";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 

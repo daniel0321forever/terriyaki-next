@@ -1,8 +1,7 @@
 import Cookies from "js-cookie";
 import { User } from "@/types/user.types";
 import { Grind } from "@/types/grind.types";
-
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL;
+import { API_BASE, isDev } from "@/config/config";
 
 export async function login(email: string, password: string) {
   const res = await fetch(`${API_BASE}/v1/login`, {
@@ -15,27 +14,36 @@ export async function login(email: string, password: string) {
 
   switch (res.status) {
     case 200:
-      var data = await res.json();
+      let data = await res.json();
 
-      console.log("status: ", res.status, "data: ", data);
+      if (isDev) {
+        console.log("status: ", res.status, "data: ", data);
+      }
 
       Cookies.set("token", data.token);
 
-      var user: User = data.user;
-      var currentGrind: Grind = data.grind;
+      const user: User = data.user;
+      const currentGrind: Grind = data.grind;
 
       return { user, currentGrind };
 
     case 400:
-      var data = await res.json();
-      console.log("status: ", res.status, "error: ", data);
+      if (isDev) {
+        let data = await res.json();
+        console.warn("status: ", res.status, "error: ", data);
+      }
       throw new Error("invalid-email");
     case 401:
-      var data = await res.json();
+      if (isDev) {
+        let data = await res.json();
+        console.warn("status: ", res.status, "error: ", data);
+      }
       throw new Error(data.errorCode);
     default:
-      var data = await res.json();
-      console.log("status: ", res.status, "error: ", data);
+      if (isDev) {
+        let data = await res.json();
+        console.error("status: ", res.status, "error: ", data);
+      }
       throw new Error(data.errorCode);
   }
 }
@@ -52,24 +60,31 @@ export async function register(email: string, password: string, username: string
   
   switch (res.status) {
     case 200:
-      var data = await res.json();
-      console.log("status: ", res.status, "data: ", data);
-      var user: User = data.user;
-
+      let data = await res.json();
+      if (isDev) {
+        console.log("status: ", res.status, "data: ", data);
+      }
+      const user: User = data.user;
       Cookies.set("token", data.token);
 
       return user;
     case 400:
-      var data = await res.json();
-      console.log("status: ", res.status, "data: ", data);
+      if (isDev) {
+        let data = await res.json();
+        console.warn("status: ", res.status, "error: ", data);
+      }
       throw new Error(data.errorCode);
     case 401:
-      var data = await res.json();
-      console.log("status: ", res.status, "error: ", data);
-        throw new Error(data.errorCode);
+      if (isDev) {
+        let data = await res.json();
+        console.warn("status: ", res.status, "error: ", data);
+      }
+      throw new Error(data.errorCode);
     default:
-      var data = await res.json();
-      console.log("status: ", res.status, "error: ", data);
+      if (isDev) {
+        let data = await res.json();
+        console.error("status: ", res.status, "error: ", data);
+      }
       throw new Error(data.errorCode);
   }
 }
@@ -85,13 +100,17 @@ export async function logout() {
 
   switch (res.status) {
     case 200:
-      var data = await res.json();
-      console.log("status: ", res.status, "data: ", data);
+      let data = await res.json();
+      if (isDev) {
+        console.log("status: ", res.status, "data: ", data);
+      }
       Cookies.remove("token");
       return true;
     default:
-      var data = await res.json();
-      console.log("status: ", res.status, "error: ", data);
+      if (isDev) {
+        let data = await res.json();
+        console.error("status: ", res.status, "error: ", data);
+      }
       throw new Error(data.errorCode);
   }
 }
@@ -107,18 +126,24 @@ export async function verifyToken() {
 
   switch (res.status) {
     case 200:
-      var data = await res.json();
-      console.log("status: ", res.status, "data: ", data);
-      var user: User = data.user;
-      var currentGrind: Grind | null = data.grind;
+      let data = await res.json();
+      if (isDev) {
+        console.log("status: ", res.status, "data: ", data);
+      }
+      const user: User = data.user;
+      const currentGrind: Grind | null = data.grind;
       return { user: user, currentGrind: currentGrind };
     case 401:
-      var data = await res.json();
-      console.log("status: ", res.status, "error: ", data);
+      if (isDev) {
+        let data = await res.json();
+        console.warn("status: ", res.status, "error: ", data);
+      }
       throw new Error(data.errorCode);
     default:
-      var data = await res.json();
-      console.log("status: ", res.status, "error: ", data);
+      if (isDev) {
+        let data = await res.json();
+        console.error("status: ", res.status, "error: ", data);
+      }
       throw new Error(data.errorCode);
   }
 }

@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import {
   Dialog,
   DialogTitle,
@@ -18,8 +17,6 @@ import {
 import { Message } from '@/types/message.types';
 import { acceptInvitationMessage, rejectInvitationMessage } from '@/lib/service/message.service';
 import { useMessageStore } from '@/lib/stores/message.store';
-import { useGrindStore } from '@/lib/stores/grind.store';
-import { quitGrind } from '@/lib/service/grind.service';
 
 interface GrindInvitationMessageDialogProps {
   open: boolean;
@@ -89,9 +86,6 @@ const GrindInvitationMessageDialog: React.FC<GrindInvitationMessageDialogProps> 
   const [actionError, setActionError] = useState<string | null>(null);
   const setMessages = useMessageStore((state: any) => state.setMessages);
   const messages = useMessageStore((state: any) => state.messages);
-  const currentGrind = useGrindStore((state: any) => state.currentGrind);
-  const setCurrentGrind = useGrindStore((state: any) => state.setCurrentGrind);
-  const router = useRouter();
 
   if (!message || !message.grind) return null;
 
@@ -105,12 +99,6 @@ const GrindInvitationMessageDialog: React.FC<GrindInvitationMessageDialogProps> 
     setActionError(null);
     
     try {
-      // If there's a current grind, quit it first
-      if (currentGrind) {
-        await quitGrind(currentGrind.id);
-        setCurrentGrind(null);
-      }
-      
       await acceptInvitationMessage(message.id);
       
       // Update message in store to mark as accepted
@@ -122,11 +110,6 @@ const GrindInvitationMessageDialog: React.FC<GrindInvitationMessageDialogProps> 
       setMessages(updatedMessages);
       
       onActionComplete?.();
-
-      if (currentGrind) {
-        router.push('/');
-      }
-
       onClose();
     } catch (error: any) {
       console.error('Failed to accept invitation:', error);
@@ -319,7 +302,7 @@ const GrindInvitationMessageDialog: React.FC<GrindInvitationMessageDialogProps> 
           onClick={handleAccept}
           disabled={isResponded}
         >
-          {currentGrind ? 'Accept (Quit Current Grind)' : 'Accept'}
+          Accept
         </ActionButton>
       </DialogActions>
     </Dialog>
