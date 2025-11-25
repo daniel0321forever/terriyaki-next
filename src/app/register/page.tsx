@@ -273,8 +273,10 @@ export default function RegisterPage() {
               }}
             >
               Already have an account?{' '}
-              <Link
-                href="/login"
+              <Typography
+                component="span"
+                onClick={() => router.push('/login')}
+                style={{ cursor: 'pointer' }}
                 sx={{
                   color: '#FFC15E',
                   textDecoration: 'none',
@@ -285,7 +287,7 @@ export default function RegisterPage() {
                 }}
               >
                 Sign in
-              </Link>
+              </Typography>
             </Typography>
           </Box>
         </Box>

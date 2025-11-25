@@ -224,8 +224,10 @@ export default function LoginPage() {
               }}
             >
               Don't have an account?{' '}
-              <Link
-                href="/register"
+              <Typography
+                component="span"
+                onClick={() => router.push('/register')}
+                style={{ cursor: 'pointer' }}
                 sx={{
                   color: '#FFC15E',
                   textDecoration: 'none',
@@ -236,7 +238,7 @@ export default function LoginPage() {
                 }}
               >
                 Sign up
-              </Link>
+              </Typography>
             </Typography>
           </Box>
         </Box>
