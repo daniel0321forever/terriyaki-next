@@ -78,7 +78,7 @@ const MessageItem: React.FC<MessageItemProps> = ({
         <Chip
           label={message.type.replace('_', ' ')}
           size="small"
-          color={getMessageTypeColor(message.type) as any}
+          color={getMessageTypeColor(message.type)}
           sx={{ ml: 1, fontSize: '0.7rem', height: 20 }}
         />
       </Box>

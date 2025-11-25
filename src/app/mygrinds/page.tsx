@@ -11,6 +11,8 @@ import { getGrinds } from '@/lib/service/grind.service';
 import { useGrindStore } from '@/lib/stores/grind.store';
 import { useUserStore } from '@/lib/stores/auth.store';
 import { Grind } from '@/types/grind.types';
+import { User } from '@/types/user.types';
+import { UserStoreState } from '@/lib/stores/auth.store';
 
 export default function MyGrindsPage() {
   const router = useRouter();
@@ -18,8 +20,8 @@ export default function MyGrindsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   
-  const currentGrind = useGrindStore((state: any) => state.currentGrind);
-  const user = useUserStore((state: any) => state.user);
+  const currentGrind: Grind | null = useGrindStore((state) => state.currentGrind);
+  const user: User | null = useUserStore((state: UserStoreState) => state.user);
 
   useEffect(() => {
     const fetchGrinds = async () => {
@@ -28,7 +30,6 @@ export default function MyGrindsPage() {
         const allGrinds = await getGrinds();
         setGrinds(allGrinds);
       } catch (err) {
-        console.error('Failed to fetch grinds:', err);
         setError(err instanceof Error ? err.message : 'Failed to load grinds');
       } finally {
         setLoading(false);

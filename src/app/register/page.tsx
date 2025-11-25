@@ -8,6 +8,7 @@ import { UserPlus } from 'lucide-react';
 import { register } from '@/lib/service/auth.service';
 
 import { useUserStore } from '@/lib/stores/auth.store';
+import { UserStoreState } from '@/lib/stores/auth.store';
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -18,7 +19,7 @@ export default function RegisterPage() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
-  const setUser = useUserStore((state: any) => state.setUser);
+  const setUser = useUserStore((state: UserStoreState) => state.setUser);
 
   const handleRegister = (e: React.FormEvent) => {
     e.preventDefault();

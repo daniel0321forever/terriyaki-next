@@ -15,10 +15,8 @@ import { Chip } from '@mui/material';
 import { Upload } from 'lucide-react';
 import Editor from '@monaco-editor/react';
 import { submitTask } from '@/lib/service/task.serivice';
-import { useGrindStore } from '@/lib/stores/grind.store';
 
 function UploadDialog({ task, open, onClose }: { task: Task, open: boolean, onClose: () => void }) {
-  const currentGrind = useGrindStore((state: any) => state.currentGrind);
   const [code, setCode] = useState(task.code || '');
   const [language, setLanguage] = useState(task.language || 'javascript');
   
@@ -282,7 +280,7 @@ export default function LeetCodeTaskCard({ task }: { task: Task }) {
 
       {/* LeetCode Problem Description */}
       <Typography variant="body1" sx={{ fontSize: '1.1rem', color: 'rgb(116, 116, 116)', mb: 4, px: 6 }}>
-        To complete today's LeetCode task, please copy and paste your solution code from your code editor or the LeetCode website into the dialog by clicking the button below.
+        To complete today&apos;s LeetCode task, please copy and paste your solution code from your code editor or the LeetCode website into the dialog by clicking the button below.
       </Typography>
 
       

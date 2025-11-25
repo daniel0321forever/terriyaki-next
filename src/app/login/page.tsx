@@ -9,12 +9,13 @@ import { login } from '@/lib/service/auth.service';
 import { useUserStore } from '@/lib/stores/auth.store';
 import { useGrindStore } from '@/lib/stores/grind.store';
 import { ERROR_CODE_INVALID_EMAIL, ERROR_CODE_INVALID_PASSWORD } from '@/config/error_code';
+import { UserStoreState } from '@/lib/stores/auth.store';
 
 
 export default function LoginPage() {
   const router = useRouter();
-  const setUser = useUserStore((state: any) => state.setUser);
-  const setGrind = useGrindStore((state: any) => state.setCurrentGrind);
+  const setUser = useUserStore((state: UserStoreState) => state.setUser);
+  const setGrind = useGrindStore((state) => state.setCurrentGrind);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
@@ -24,7 +25,7 @@ export default function LoginPage() {
     login(email, password).then(({ user, currentGrind }) => {
       setUser(user);
       setGrind(currentGrind);
-      router.push('/grind/new');
+      router.push('/');
     }).catch((error) => {
       switch (error.message) {
         case ERROR_CODE_INVALID_EMAIL:
@@ -223,7 +224,7 @@ export default function LoginPage() {
                 fontSize: '0.95rem',
               }}
             >
-              Don't have an account?{' '}
+              Don&apos;t have an account?{' '}
               <Typography
                 component="span"
                 onClick={() => router.push('/register')}

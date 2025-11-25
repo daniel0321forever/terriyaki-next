@@ -1,9 +1,7 @@
 'use client';
 
-import { useEffect } from 'react';
 import { useUserStore } from '@/lib/stores/auth.store';
 import { useGrindStore } from '@/lib/stores/grind.store';
-import { useMessageStore } from '@/lib/stores/message.store';
 
 import { Box, Typography, Button } from '@mui/material';
 import { useRouter } from 'next/navigation';
@@ -12,18 +10,18 @@ import { Target, TrendingUp } from 'lucide-react';
 import CustomAppBar from '@/app/components/CustomAppBar';
 import GrindPreview from '@/app/components/GrindPreview';
 import { quitGrind } from '@/lib/service/grind.service';
-import { Grind } from '@/types/grind.types';
+import { Grind, Participant } from '@/types/grind.types';
 import { User } from '@/types/user.types';
-import { Message } from '@/types/message.types';
-import { getMessages } from '@/lib/service/message.service';
+import { UserStoreState } from '@/lib/stores/auth.store';
+
 
 export default function GrindHomePageView() {
   const router = useRouter();
-  const grind: Grind | null = useGrindStore((state: any) => state.currentGrind);
-  const user: User | null = useUserStore((state: any) => state.user);
+  const grind: Grind | null = useGrindStore((state) => state.currentGrind);
+  const user: User | null = useUserStore((state: UserStoreState) => state.user);
 
   const currentUserParticipant = grind?.participants?.find(
-    (participant: any) => participant.id === user?.id
+    (participant: Participant) => participant.id === user?.id
   );
 
   // Calculate duration from progress or use grind.duration

@@ -18,13 +18,14 @@ import ProgressGrid from '@/app/components/ProgressGrid';
 import UserCard from '@/app/components/UserCard';
 import { User } from '@/types/user.types';
 import { getCurrentGrind } from '@/lib/service/grind.service';
+import { UserStoreState } from '@/lib/stores/auth.store';
 
 
 export default function GrindPage() {
   const router = useRouter();
 
-  const grind: Grind = useGrindStore((state: any) => state.currentGrind);
-  const user: User = useUserStore((state: any) => state.user);
+  const grind: Grind | null = useGrindStore((state) => state.currentGrind);
+  const user: User | null = useUserStore((state: UserStoreState) => state.user);
 
   useEffect(() => {
     getCurrentGrind().then((grind: Grind) => {
@@ -41,7 +42,7 @@ export default function GrindPage() {
     );
   }
 
-  var currentUser = grind.participants.find((participant: Participant) => participant.id === user?.id);
+  const currentUser: Participant | undefined = grind.participants.find((participant: Participant) => participant.id === user?.id);
 
   return (
     <Box sx={{ minHeight: '100vh', bgcolor: 'background.default', pb: '50px' }}>

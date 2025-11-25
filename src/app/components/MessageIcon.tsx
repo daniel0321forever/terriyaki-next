@@ -34,8 +34,8 @@ const MessageIcon: React.FC = () => {
   const [hasMore, setHasMore] = useState(true);
   const messageOpen = Boolean(messageAnchorEl);
 
-  const messages: Message[] = useMessageStore((state: any) => state.messages);
-  const setMessages = useMessageStore((state: any) => state.setMessages);
+  const messages: Message[] = useMessageStore((state) => state.messages);
+  const setMessages = useMessageStore((state) => state.setMessages);
 
   const unreadMessageCount = useMemo(() => {
     return messages.filter((message: Message) => !message.read).length;

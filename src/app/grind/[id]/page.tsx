@@ -13,10 +13,12 @@ import { getGrindById } from '@/lib/service/grind.service';
 import { getTaskDetail } from '@/lib/service/task.serivice';
 import { Participant, ProgressRecord, Grind } from '@/types/grind.types';
 import { Task } from '@/types/task.types';
+import { UserStoreState } from '@/lib/stores/auth.store';
 
 import ProgressGrid from '@/app/components/ProgressGrid';
 import BackButton from '@/app/components/BackButton';
 import CustomAppBar from '@/app/components/CustomAppBar';
+import { User } from '@/types/user.types';
 
 
 export default function GrindProgress() {
@@ -25,8 +27,8 @@ export default function GrindProgress() {
 
   const [grind, setGrind] = useState<Grind | null>(null);
 
-  const currentUser = useUserStore((state: any) => state.user);
-  const currentGrind = useGrindStore((state: any) => state.currentGrind);
+  const currentUser: User | null = useUserStore((state: UserStoreState) => state.user);
+  const currentGrind: Grind | null = useGrindStore((state) => state.currentGrind);
 
   // Task detail state
   const [selectedProgressRecord, setSelectedProgressRecord] = useState<ProgressRecord | null>(null);

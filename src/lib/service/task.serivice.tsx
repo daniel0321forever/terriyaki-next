@@ -19,20 +19,20 @@ export async function submitTask(code: string, language: string) {
 
     switch (res.status) {
         case 200:
-            let data = await res.json();
+            const data = await res.json();
             if (isDev) {
                 console.log("status: ", res.status, "data: ", data);
             }
             return data;
         case 401:
             if (isDev) {
-                let data = await res.json();
+                const data = await res.json();
                 console.error("status: ", res.status, "error: ", data);
             }
             throw new Error(ERROR_CODE_UNAUTHORIZED);
         default:
             if (isDev) {
-                let data = await res.json();
+                const data = await res.json();
                 console.error("status: ", res.status, "error: ", data);
             }
             throw new Error(ERROR_CODE_UNKNOWN);
@@ -50,7 +50,7 @@ export async function getTaskDetail(taskId: number) {
 
     switch (res.status) {
         case 200:
-            let data = await res.json();
+            const data = await res.json();
             if (isDev) {
                 console.log("status: ", res.status, "data: ", data);
             }
@@ -58,13 +58,13 @@ export async function getTaskDetail(taskId: number) {
             return task;
         case 401:
             if (isDev) {
-                let data = await res.json();
+                const data = await res.json();
                 console.error("status: ", res.status, "error: ", data);
             }
             throw new Error(ERROR_CODE_UNAUTHORIZED);
         default:
             if (isDev) {
-                let data = await res.json();
+                const data = await res.json();
                 console.error("status: ", res.status, "error: ", data);
             }
             throw new Error(ERROR_CODE_UNKNOWN);

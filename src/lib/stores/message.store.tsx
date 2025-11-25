@@ -2,7 +2,12 @@ import { create } from "zustand";
 import { Message } from "@/types/message.types";
 import { persist } from "zustand/middleware";
 
-export const useMessageStore = create(
+type MessageStoreState = {
+    messages: Message[];
+    setMessages: (messages: Message[]) => void;
+}
+
+export const useMessageStore = create<MessageStoreState>()(
     persist(
         (set) => ({
             messages: [],

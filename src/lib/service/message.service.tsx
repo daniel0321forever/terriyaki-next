@@ -1,6 +1,4 @@
 import Cookies from "js-cookie";
-import { User } from "@/types/user.types";
-import { Grind } from "@/types/grind.types";
 import { Message } from "@/types/message.types";
 import { ERROR_CODE_UNAUTHORIZED, ERROR_CODE_UNKNOWN } from "@/config/error_code";
 import { API_BASE, isDev } from "@/config/config";
@@ -16,7 +14,7 @@ export async function getMessages(offset: number = 0, limit: number = 10) {
 
     switch (res.status) {
         case 200:
-            let data = await res.json();
+            const data = await res.json();
             if (isDev) {
                 console.log("status: ", res.status, "data: ", data);
             }
@@ -24,13 +22,13 @@ export async function getMessages(offset: number = 0, limit: number = 10) {
             return messages;
         case 401:
             if (isDev) {
-                let data = await res.json();
+                const data = await res.json();
                 console.error("status: ", res.status, "error: ", data);
             }
             throw new Error(ERROR_CODE_UNAUTHORIZED);
         default:
             if (isDev) {
-                let data = await res.json();
+                const data = await res.json();
                 console.error("status: ", res.status, "error: ", data);
             }
             throw new Error(ERROR_CODE_UNKNOWN);
@@ -71,20 +69,20 @@ export async function createInvitationMessage(grindID: string, participantEmail:
 
     switch (res.status) {
         case 200:
-            let data = await res.json();
+            const data = await res.json();
             if (isDev) {
                 console.log("status: ", res.status, "data: ", data);
             }
             return true;
         case 401:
             if (isDev) {
-                let data = await res.json();
+                const data = await res.json();
                 console.error("status: ", res.status, "error: ", data);
             }
             throw new Error(data.errorCode);
         default:    
             if (isDev) {
-                let data = await res.json();
+                const data = await res.json();
                 console.error("status: ", res.status, "error: ", data);
             }
             throw new Error(ERROR_CODE_UNKNOWN);
@@ -101,18 +99,18 @@ export async function acceptInvitationMessage(messageId: number) {
 
     switch (res.status) {
         case 200:
-            let data = await res.json();
+            const data = await res.json();
             console.log("status: ", res.status, "data: ", data);
             return true;
         case 401:
             if (isDev) {
-                let data = await res.json();
+                const data = await res.json();
                 console.error("status: ", res.status, "error: ", data);
             }
             throw new Error(data.errorCode);
         default:
             if (isDev) {
-                let data = await res.json();
+                const data = await res.json();
                 console.error("status: ", res.status, "error: ", data);
             }
             throw new Error(ERROR_CODE_UNKNOWN);
@@ -130,20 +128,20 @@ export async function rejectInvitationMessage(messageId: number) {
 
     switch (res.status) {
         case 200:
-            let data = await res.json();
+            const data = await res.json();
             if (isDev) {
                 console.log("status: ", res.status, "data: ", data);
             }
             return true;
         case 401:
             if (isDev) {
-                let data = await res.json();
+                const data = await res.json();
                 console.error("status: ", res.status, "error: ", data);
             }
             throw new Error(data.errorCode);
         default:
             if (isDev) {
-                let data = await res.json();
+                const data = await res.json();
                 console.error("status: ", res.status, "error: ", data);
             }
             throw new Error(ERROR_CODE_UNKNOWN);

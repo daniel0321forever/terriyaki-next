@@ -3,15 +3,15 @@
 import { Box, Typography, TextField, Button, Select, MenuItem, FormControl, InputLabel, Alert, Chip } from '@mui/material';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { useState, useEffect } from 'react';
-import { Plus, ArrowLeft, X } from 'lucide-react';
+import { useState } from 'react';
+import { Plus, X } from 'lucide-react';
 import CustomAppBar from '@/app/components/CustomAppBar';
 import { useGrindStore } from '@/lib/stores/grind.store';
-import { Task } from '@/types/task.types';
 import { useUserStore } from '@/lib/stores/auth.store';
 import { User } from '@/types/user.types';
 import { createGrind } from '@/lib/service/grind.service';
 import { ERROR_CODE_USER_NOT_FOUND } from '@/config/error_code';
+import { UserStoreState } from '@/lib/stores/auth.store';
 
 type DurationOption = '1 week' | '2 weeks' | '3 weeks' | '1 month';
 
@@ -24,8 +24,8 @@ const DURATION_OPTIONS: { value: DurationOption; days: number }[] = [
 
 export default function NewGrindPage() {
   const router = useRouter();
-  const setCurrentGrind = useGrindStore((state: any) => state.setCurrentGrind);
-  const user: User | null = useUserStore((state: any) => state.user);
+  const setCurrentGrind = useGrindStore((state) => state.setCurrentGrind);
+  const user: User | null = useUserStore((state: UserStoreState) => state.user);
   
   // Current user email - static value, not affected by useState
   const currentUserEmail = user?.email || '';
@@ -95,8 +95,8 @@ export default function NewGrindPage() {
       const grind = await createGrind(duration, startDateObj, budget, additionalParticipants);
       setCurrentGrind(grind);
       router.push(`/grind`);
-    } catch (err: any) {
-      switch (err.message) {
+    } catch (err: unknown) {
+      switch ((err as Error).message) {
         case ERROR_CODE_USER_NOT_FOUND:
           setError('Participant not found');
           break;

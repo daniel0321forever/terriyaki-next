@@ -6,18 +6,17 @@ import { verifyToken } from '@/lib/service/auth.service';
 import { useUserStore } from '@/lib/stores/auth.store';
 import { useGrindStore } from '@/lib/stores/grind.store';
 
-import { Grind } from '@/types/grind.types';
-import { User } from '@/types/user.types';
 import GrindHomePageView from './components/GrindHomePageView';
 import LandingPageView from './components/LandingPageView';
+import { User } from '@/types/user.types';
+import { UserStoreState } from '@/lib/stores/auth.store';
 
 export default function AuthenticatedPageWrapper() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
 
-  const setUser = useUserStore((state: any) => state.setUser);
-  const setGrind = useGrindStore((state: any) => state.setCurrentGrind);
-  const user: User | null = useUserStore((state: any) => state.user);  
-  const currentGrind: Grind | null = useGrindStore((state: any) => state.currentGrind);
+  const setUser = useUserStore((state: UserStoreState) => state.setUser);
+  const setGrind = useGrindStore((state) => state.setCurrentGrind);
+  const user: User | null = useUserStore((state: UserStoreState) => state.user);  
   
   useEffect(() => {
     const performAuthCheck = async () => {

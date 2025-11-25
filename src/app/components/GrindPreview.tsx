@@ -3,14 +3,14 @@
 import { Box, Typography, Avatar, Divider, Card, CardContent, Button } from '@mui/material';
 import { motion } from 'framer-motion';
 import { Target, PlusCircle, LogOut } from 'lucide-react';
-import { Grind } from '@/types/grind.types';
+import { Grind, Participant } from '@/types/grind.types';
 import { User } from '@/types/user.types';
 import ProgressGrid from './ProgressGrid';
 
 interface GrindPreviewProps {
   grind: Grind | null;
   user: User | null;
-  currentUserParticipant?: any;
+  currentUserParticipant?: Participant;
   missedDays: number;
   duration: number;
   onContinue: () => void;

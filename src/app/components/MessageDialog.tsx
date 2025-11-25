@@ -59,7 +59,7 @@ const MessageDialog: React.FC<MessageDialogProps> = ({
               <Chip
                 label={message.type.replace('_', ' ')}
                 size="small"
-                color={getMessageTypeColor(message.type) as any}
+                color={getMessageTypeColor(message.type)}
               />
               <Typography variant="caption" color="text.secondary">
                 {formatDate(message.createdAt)}

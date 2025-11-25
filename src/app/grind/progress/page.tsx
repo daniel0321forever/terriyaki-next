@@ -7,17 +7,18 @@ import BackButton from '@/app/components/BackButton';
 import UserAvatarSelector from '@/app/grind/progress/components/UserAvatarSelector';
 import { useState, useRef } from 'react';
 import { useGrindStore } from '@/lib/stores/grind.store';
-import { Participant, ProgressRecord } from '@/types/grind.types';
+import { Grind, Participant, ProgressRecord } from '@/types/grind.types';
 import { useUserStore } from '@/lib/stores/auth.store';
 import { Task } from '@/types/task.types';
 import { getTaskDetail } from '@/lib/service/task.serivice';
 import Editor from '@monaco-editor/react';
+import { User } from '@/types/user.types';
+import { UserStoreState } from '@/lib/stores/auth.store';
 
 export default function GrindProgress() {
-  const grind = useGrindStore((state: any) => state.currentGrind);
+  const grind: Grind | null = useGrindStore((state) => state.currentGrind);
   const [selectedUserId, setSelectedUserId] = useState<string>('current');
-  const currentUser = useUserStore((state: any) => state.user);
-  const currentUserParticipant = grind?.participants.find((participant: Participant) => participant.id === currentUser?.id);
+  const currentUser: User | null = useUserStore((state: UserStoreState) => state.user);
   
   // Task detail state
   const [selectedProgressRecord, setSelectedProgressRecord] = useState<ProgressRecord | null>(null);

@@ -6,7 +6,8 @@ import CustomAppBar from '@/app/components/CustomAppBar';
 import BackButton from '@/app/components/BackButton';
 import { useState } from 'react';
 import { useGrindStore } from '@/lib/stores/grind.store';
-import { Participant } from '@/types/grind.types';
+import { Grind, Participant } from '@/types/grind.types';
+import { User } from '@/types/user.types';
 import { useUserStore } from '@/lib/stores/auth.store';
 
 function ToggleOption({ title, checked, onChange }: { title: string, checked: boolean, onChange: () => void }) {
@@ -46,12 +47,9 @@ function InfoCard({ title, description }: { title: string, description: string }
 }
 
 export default function GrindSettings() {
-  const grind = useGrindStore((state: any) => state.currentGrind);
-  const [autoRenew, setAutoRenew] = useState(grind?.autoRenew || false);
+  const grind: Grind | null = useGrindStore((state) => state.currentGrind);
+  const [autoRenew, setAutoRenew] = useState(false);
   
-  const currentUser = useUserStore((state: any) => state.user);
-  const currentUserParticipant = grind?.participants.find((participant: Participant) => participant.id === currentUser?.id);
-
   if (!grind) {
     return (
       <Box sx={{ minHeight: '100vh', bgcolor: 'background.default', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -124,7 +122,7 @@ export default function GrindSettings() {
         <Box sx={{ mb: 4 }}>
           <InfoCard 
             title="Duration" 
-            description={`${grind.duration} days (${grind.startDate} - ${grind.endDate})`}
+            description={`${grind.duration} days (${grind.startDate} - ${new Date(grind.startDate).getTime() + grind.duration * 24 * 60 * 60 * 1000})`}
           />
         </Box>
 

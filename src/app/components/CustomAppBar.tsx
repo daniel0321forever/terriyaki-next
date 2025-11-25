@@ -27,8 +27,8 @@ const CustomAppBar: React.FC<AppBarProps> = () => {
   const router = useRouter();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
-  const setUser = useUserStore((state: any) => state.setUser);
-  const setGrind = useGrindStore((state: any) => state.setCurrentGrind);
+  const setUser = useUserStore((state) => state.setUser);
+  const setGrind = useGrindStore((state) => state.setCurrentGrind);
 
   const handleHomeClick = () => {
     router.push('/');

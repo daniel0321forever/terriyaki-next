@@ -84,8 +84,8 @@ const GrindInvitationMessageDialog: React.FC<GrindInvitationMessageDialogProps> 
 }) => {
   const [loading, setLoading] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
-  const setMessages = useMessageStore((state: any) => state.setMessages);
-  const messages = useMessageStore((state: any) => state.messages);
+  const setMessages = useMessageStore((state) => state.setMessages);
+  const messages = useMessageStore((state) => state.messages);
 
   if (!message || !message.grind) return null;
 
@@ -111,9 +111,8 @@ const GrindInvitationMessageDialog: React.FC<GrindInvitationMessageDialogProps> 
       
       onActionComplete?.();
       onClose();
-    } catch (error: any) {
-      console.error('Failed to accept invitation:', error);
-      setActionError(error.message || 'Failed to accept invitation');
+    } catch (error: unknown) {
+      setActionError((error as Error).message || 'Failed to accept invitation');
     } finally {
       setLoading(false);
     }
@@ -138,9 +137,8 @@ const GrindInvitationMessageDialog: React.FC<GrindInvitationMessageDialogProps> 
       
       onActionComplete?.();
       onClose();
-    } catch (error: any) {
-      console.error('Failed to reject invitation:', error);
-      setActionError(error.message || 'Failed to reject invitation');
+    } catch (error: unknown) {  
+      setActionError((error as Error).message || 'Failed to reject invitation');
     } finally {
       setLoading(false);
     }
@@ -182,7 +180,7 @@ const GrindInvitationMessageDialog: React.FC<GrindInvitationMessageDialogProps> 
               <Chip
                 label={message.type.replace('_', ' ')}
                 size="small"
-                color={getMessageTypeColor(message.type) as any}
+                color={getMessageTypeColor(message.type)}
               />
               <Typography variant="caption" color="text.secondary">
                 {formatDate(message.createdAt)}

@@ -25,28 +25,28 @@ export async function createGrind(
 
     switch (res.status) {
         case 200:
-            let data = await res.json();
+            const data = await res.json();
             if (isDev) {
                 console.log("status: ", res.status, "data: ", data);
             }
-            var grind: Grind = data.grind;
+            const grind: Grind = data.grind;
             return grind;
         case 400:
             if (isDev) {
-                let data = await res.json();
+                const data = await res.json();
                 console.warn("status: ", res.status, "error: ", data);
             }
             throw new Error(data.errorCode);
         case 401:
             if (isDev) {
-                let data = await res.json();
+                const data = await res.json();
                 console.error("status: ", res.status, "error: ", data);
             }
             console.log("status: ", res.status, "error: ", data);
             throw new Error(ERROR_CODE_UNAUTHORIZED);
         default:
             if (isDev) {
-                let data = await res.json();
+                const data = await res.json();
                 console.error("status: ", res.status, "error: ", data);
             }
             console.log("status: ", res.status, "error: ", data);
@@ -65,7 +65,7 @@ export async function getCurrentGrind() {
 
     switch (res.status) {
         case 200:
-            let data = await res.json();
+            const data = await res.json();
             if (isDev) {
                 console.log("status: ", res.status, "data: ", data);
             }
@@ -73,13 +73,13 @@ export async function getCurrentGrind() {
             return currentGrind;
         case 401:
             if (isDev) {
-                let data = await res.json();
+                const data = await res.json();
                 console.warn("status: ", res.status, "error: ", data);
             }
             throw new Error(ERROR_CODE_UNAUTHORIZED);
         default:
             if (isDev) {
-                let data = await res.json();
+                const data = await res.json();
                 console.error("status: ", res.status, "error: ", data);
             }
             throw new Error(ERROR_CODE_UNKNOWN);
@@ -97,7 +97,7 @@ export async function getGrindById(grindId: string) {
 
     switch (res.status) {
         case 200:
-            let data = await res.json();
+            const data = await res.json();
             if (isDev) {
                 console.log("status: ", res.status, "data: ", data);
             }
@@ -105,13 +105,13 @@ export async function getGrindById(grindId: string) {
             return grind;
         case 401:
             if (isDev) {
-                let data = await res.json();
+                const data = await res.json();
                 console.error("status: ", res.status, "error: ", data);
             }
             throw new Error(ERROR_CODE_UNAUTHORIZED);
         default:
             if (isDev) {
-                let data = await res.json();
+                const data = await res.json();
                 console.error("status: ", res.status, "error: ", data);
             }
             throw new Error(ERROR_CODE_UNKNOWN);
@@ -129,7 +129,7 @@ export async function getGrinds() {
 
     switch (res.status) {
         case 200:
-            let data = await res.json();
+            const data = await res.json();
             if (isDev) {
                 console.log("status: ", res.status, "data: ", data);
             }
@@ -137,13 +137,13 @@ export async function getGrinds() {
             return grinds;
         case 401:
             if (isDev) {
-                let data = await res.json();
+                const data = await res.json();
                 console.error("status: ", res.status, "error: ", data);
             }
             throw new Error(ERROR_CODE_UNAUTHORIZED);
         default:
             if (isDev) {
-                let data = await res.json();
+                const data = await res.json();
                 console.error("status: ", res.status, "error: ", data);
             }
             throw new Error(ERROR_CODE_UNKNOWN);
@@ -161,20 +161,20 @@ export async function quitGrind(grindId: number) {
 
     switch (res.status) {
         case 200:
-            let data = await res.json();
+            const data = await res.json();
             if (isDev) {
                 console.log("status: ", res.status, "data: ", data);
             }
             return data;
         case 401:
             if (isDev) {
-                let data = await res.json();
+                const data = await res.json();
                 console.error("status: ", res.status, "error: ", data);
             }
             throw new Error(ERROR_CODE_UNAUTHORIZED);
         default:
             if (isDev) {
-                let data = await res.json();
+                const data = await res.json();
                 console.error("status: ", res.status, "error: ", data);
             }
             throw new Error(ERROR_CODE_UNKNOWN);
