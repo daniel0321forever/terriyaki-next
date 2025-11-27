@@ -4,7 +4,7 @@ import { ERROR_CODE_UNAUTHORIZED, ERROR_CODE_UNKNOWN } from "@/config/error_code
 import { API_BASE, isDev } from "@/config/config";
 
 export async function getMessages(offset: number = 0, limit: number = 10) {
-    const res = await fetch(`${API_BASE}/v1/messages?offset=${offset}&limit=${limit}`, {
+    const res = await fetch(`${API_BASE}/api/v1/messages?offset=${offset}&limit=${limit}`, {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
@@ -36,7 +36,7 @@ export async function getMessages(offset: number = 0, limit: number = 10) {
 }
 
 export async function readMessage(messageId: number) {
-    const res = await fetch(`${API_BASE}/v1/messages/${messageId}/read`, {
+    const res = await fetch(`${API_BASE}/api/v1/messages/${messageId}/read`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -55,7 +55,7 @@ export async function readMessage(messageId: number) {
 }
 
 export async function createInvitationMessage(grindID: string, participantEmail: string) {
-    const res = await fetch(`${API_BASE}/v1/messages/invitation`, {
+    const res = await fetch(`${API_BASE}/api/v1/messages/invitation`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -90,7 +90,7 @@ export async function createInvitationMessage(grindID: string, participantEmail:
 }
 
 export async function acceptInvitationMessage(messageId: number) {
-    const res = await fetch(`${API_BASE}/v1/messages/${messageId}/invitation/accept`, {
+    const res = await fetch(`${API_BASE}/api/v1/messages/${messageId}/invitation/accept`, {
         method: "POST",
         headers: {
             "Authorization": `Bearer ${Cookies.get("token")}`,
@@ -118,7 +118,7 @@ export async function acceptInvitationMessage(messageId: number) {
 }
 
 export async function rejectInvitationMessage(messageId: number) {
-    const res = await fetch(`${API_BASE}/v1/messages/${messageId}/invitation/reject`, {
+    const res = await fetch(`${API_BASE}/api/v1/messages/${messageId}/invitation/reject`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",

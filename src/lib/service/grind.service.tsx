@@ -9,7 +9,7 @@ export async function createGrind(
     budget: number,
     participants: string[],
 ) {
-    const res = await fetch(`${API_BASE}/v1/grinds`, {
+    const res = await fetch(`${API_BASE}/api/v1/grinds`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -55,7 +55,7 @@ export async function createGrind(
 }
 
 export async function getCurrentGrind() {
-    const res = await fetch(`${API_BASE}/v1/grinds/current`, {
+    const res = await fetch(`${API_BASE}/api/v1/grinds/current`, {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
@@ -87,7 +87,7 @@ export async function getCurrentGrind() {
 }
 
 export async function getGrindById(grindId: string) {
-    const res = await fetch(`${API_BASE}/v1/grinds/${grindId}`, {
+    const res = await fetch(`${API_BASE}/api/v1/grinds/${grindId}`, {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
@@ -119,7 +119,7 @@ export async function getGrindById(grindId: string) {
 }
 
 export async function getGrinds() {
-    const res = await fetch(`${API_BASE}/v1/grinds`, {
+    const res = await fetch(`${API_BASE}/api/v1/grinds`, {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
@@ -151,7 +151,7 @@ export async function getGrinds() {
 }
 
 export async function quitGrind(grindId: number) {
-    const res = await fetch(`${API_BASE}/v1/grinds/${grindId}/quit`, {
+    const res = await fetch(`${API_BASE}/api/v1/grinds/${grindId}/quit`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",

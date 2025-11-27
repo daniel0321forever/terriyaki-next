@@ -4,7 +4,7 @@ import { Grind } from "@/types/grind.types";
 import { API_BASE, isDev } from "@/config/config";
 
 export async function login(email: string, password: string) {
-  const res = await fetch(`${API_BASE}/v1/login`, {
+  const res = await fetch(`${API_BASE}/api/v1/login`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -49,7 +49,7 @@ export async function login(email: string, password: string) {
 }
 
 export async function register(email: string, password: string, username: string) {
-  const res = await fetch(`${API_BASE}/v1/register`, {
+  const res = await fetch(`${API_BASE}/api/v1/register`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -90,7 +90,7 @@ export async function register(email: string, password: string, username: string
 }
 
 export async function logout() {
-  const res = await fetch(`${API_BASE}/v1/logout`, {
+  const res = await fetch(`${API_BASE}/api/v1/logout`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -116,7 +116,7 @@ export async function logout() {
 }
 
 export async function verifyToken() {
-  const res = await fetch(`${API_BASE}/v1/verify-token`, {
+  const res = await fetch(`${API_BASE}/api/v1/verify-token`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",

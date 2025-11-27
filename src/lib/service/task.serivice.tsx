@@ -4,7 +4,7 @@ import { Task } from "@/types/task.types";
 import { API_BASE, isDev } from "@/config/config";
 
 export async function submitTask(code: string, language: string) {
-    const res = await fetch(`${API_BASE}/v1/tasks/finish`, {
+    const res = await fetch(`${API_BASE}/api/v1/tasks/finish`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -40,7 +40,7 @@ export async function submitTask(code: string, language: string) {
 }
 
 export async function getTaskDetail(taskId: number) {
-    const res = await fetch(`${API_BASE}/v1/tasks/${taskId}?set-problem=false`, {
+    const res = await fetch(`${API_BASE}/api/v1/tasks/${taskId}?set-problem=false`, {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
