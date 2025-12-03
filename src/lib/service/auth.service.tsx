@@ -12,10 +12,9 @@ export async function login(email: string, password: string) {
     body: JSON.stringify({ email, password }),
   });
 
+  const data = await res.json();
   switch (res.status) {
     case 200:
-      const data = await res.json();
-
       if (isDev) {
         console.log("status: ", res.status, "data: ", data);
       }
@@ -27,21 +26,19 @@ export async function login(email: string, password: string) {
 
       return { user, currentGrind };
 
-    case 400:
+    // TODO: make this error visible to the user
+      case 400:
       if (isDev) {
-        const data = await res.json();
         console.warn("status: ", res.status, "error: ", data);
       }
       throw new Error("invalid-email");
     case 401:
       if (isDev) {
-        const data = await res.json();
         console.warn("status: ", res.status, "error: ", data);
       }
       throw new Error(data.errorCode);
     default:
       if (isDev) {
-        const data = await res.json();
         console.error("status: ", res.status, "error: ", data);
       }
       throw new Error(data.errorCode);
@@ -57,10 +54,10 @@ export async function register(email: string, password: string, username: string
     body: JSON.stringify({ email, password, username }),
   });
 
-  
+
+  const data = await res.json();
   switch (res.status) {
     case 200:
-      const data = await res.json();
       if (isDev) {
         console.log("status: ", res.status, "data: ", data);
       }
@@ -70,19 +67,16 @@ export async function register(email: string, password: string, username: string
       return user;
     case 400:
       if (isDev) {
-        const data = await res.json();
         console.warn("status: ", res.status, "error: ", data);
       }
       throw new Error(data.errorCode);
     case 401:
       if (isDev) {
-        const data = await res.json();
         console.warn("status: ", res.status, "error: ", data);
       }
       throw new Error(data.errorCode);
     default:
       if (isDev) {
-        const data = await res.json();
         console.error("status: ", res.status, "error: ", data);
       }
       throw new Error(data.errorCode);
@@ -98,9 +92,9 @@ export async function logout() {
     },
   });
 
+  const data = await res.json();
   switch (res.status) {
     case 200:
-      const data = await res.json();
       if (isDev) {
         console.log("status: ", res.status, "data: ", data);
       }
@@ -108,7 +102,6 @@ export async function logout() {
       return true;
     default:
       if (isDev) {
-        const data = await res.json();
         console.error("status: ", res.status, "error: ", data);
       }
       throw new Error(data.errorCode);
@@ -124,9 +117,9 @@ export async function verifyToken() {
     },
   });
 
+  const data = await res.json();
   switch (res.status) {
     case 200:
-      const data = await res.json();
       if (isDev) {
         console.log("status: ", res.status, "data: ", data);
       }
@@ -135,13 +128,11 @@ export async function verifyToken() {
       return { user: user, currentGrind: currentGrind };
     case 401:
       if (isDev) {
-        const data = await res.json();
         console.warn("status: ", res.status, "error: ", data);
       }
       throw new Error(data.errorCode);
     default:
       if (isDev) {
-        const data = await res.json();
         console.error("status: ", res.status, "error: ", data);
       }
       throw new Error(data.errorCode);
