@@ -1,5 +1,5 @@
 export interface Task {
-    id: number;
+    id: string;
     type: 'LeetCode' | 'GRE';
     title: string;
     description: string;

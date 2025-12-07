@@ -36,10 +36,10 @@ export async function submitTask(code: string, language: string) {
                 console.error("status: ", res.status, "error: ", data);
             }
             throw new Error(ERROR_CODE_UNKNOWN);
-    }   
+    }
 }
 
-export async function getTaskDetail(taskId: number) {
+export async function getTaskDetail(taskId: string) {
     const res = await fetch(`${API_BASE}/api/v1/tasks/${taskId}?set-problem=false`, {
         method: "GET",
         headers: {

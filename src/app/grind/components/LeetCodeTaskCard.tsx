@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Task } from '@/types/task.types';
 import { Typography } from '@mui/material';
 import { Box } from '@mui/material';
@@ -12,14 +13,14 @@ import { MenuItem } from '@mui/material';
 import { FormControl } from '@mui/material';
 import { InputLabel } from '@mui/material';
 import { Chip } from '@mui/material';
-import { Upload } from 'lucide-react';
+import { Upload, MessageCircle } from 'lucide-react';
 import Editor from '@monaco-editor/react';
 import { submitTask } from '@/lib/service/task.serivice';
 
 function UploadDialog({ task, open, onClose }: { task: Task, open: boolean, onClose: () => void }) {
   const [code, setCode] = useState(task.code || '');
   const [language, setLanguage] = useState(task.language || 'javascript');
-  
+
   const languages = [
     { value: 'javascript', label: 'JavaScript' },
     { value: 'typescript', label: 'TypeScript' },
@@ -33,15 +34,15 @@ function UploadDialog({ task, open, onClose }: { task: Task, open: boolean, onCl
     { value: 'kotlin', label: 'Kotlin' },
     { value: 'swift', label: 'Swift' },
   ];
-  
+
   const handleSubmit = () => {
     submitTask(code, language);
     onClose();
   };
 
   return (
-    <Dialog 
-      open={open} 
+    <Dialog
+      open={open}
       onClose={onClose}
       fullWidth
       maxWidth="lg"
@@ -57,10 +58,10 @@ function UploadDialog({ task, open, onClose }: { task: Task, open: boolean, onCl
         Submit Your Code
       </DialogTitle>
       <DialogContent>
-        <FormControl 
-          fullWidth 
-          sx={{ 
-            mb: 2, 
+        <FormControl
+          fullWidth
+          sx={{
+            mb: 2,
             mt: 1,
             '& .MuiOutlinedInput-root': {
               '& fieldset': {
@@ -94,7 +95,7 @@ function UploadDialog({ task, open, onClose }: { task: Task, open: boolean, onCl
             ))}
           </Select>
         </FormControl>
-        <Box sx={{ 
+        <Box sx={{
           border: '1px solid',
           borderColor: 'divider',
           borderRadius: 1,
@@ -122,9 +123,9 @@ function UploadDialog({ task, open, onClose }: { task: Task, open: boolean, onCl
         </Box>
       </DialogContent>
       <DialogActions sx={{ px: 3, pb: 3 }}>
-        <Button 
+        <Button
           onClick={onClose}
-          sx={{ 
+          sx={{
             bgcolor: 'rgba(79, 79, 79, 0.86)',
             color: 'text.white',
             textTransform: 'none',
@@ -133,10 +134,10 @@ function UploadDialog({ task, open, onClose }: { task: Task, open: boolean, onCl
         >
           Cancel
         </Button>
-        <Button 
+        <Button
           onClick={handleSubmit}
           variant="contained"
-          sx={{ 
+          sx={{
             bgcolor: 'orange',
             textTransform: 'none',
             fontSize: '1rem',
@@ -155,8 +156,9 @@ function UploadDialog({ task, open, onClose }: { task: Task, open: boolean, onCl
 }
 
 export default function LeetCodeTaskCard({ task }: { task: Task }) {
+  const router = useRouter();
   const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
-  
+
 
   const handleUpload = () => {
     setUploadDialogOpen(true);
@@ -164,6 +166,21 @@ export default function LeetCodeTaskCard({ task }: { task: Task }) {
 
   const handleCloseDialog = () => {
     setUploadDialogOpen(false);
+  };
+
+  const handleStartInterview = () => {
+    if (typeof task.id !== 'string') {
+      console.error('Invalid task ID type:', {
+        id: task.id,
+        type: typeof task.id,
+        expected: 'string (UUID)',
+        actual: typeof task.id,
+        task: task
+      });
+      alert(`Task ID must be a string (UUID), but got ${typeof task.id}.`);
+      return;
+    }
+    router.push(`/interview/${task.id}`);
   };
 
   const getDifficultyColor = (difficulty: 'Easy' | 'Medium' | 'Hard') => {
@@ -181,7 +198,7 @@ export default function LeetCodeTaskCard({ task }: { task: Task }) {
 
   return (
     <Box sx={{ p: 4, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-      
+
       {/* TODAY Header */}
       <Typography
         variant="h5"
@@ -191,8 +208,8 @@ export default function LeetCodeTaskCard({ task }: { task: Task }) {
       </Typography>
 
       {/* Title with Difficulty Badge */}
-      <Box sx={{ 
-        display: 'flex', 
+      <Box sx={{
+        display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
         gap: 2,
@@ -220,7 +237,7 @@ export default function LeetCodeTaskCard({ task }: { task: Task }) {
           href={task.url ?? ''}
           target="_blank"
           rel="noopener noreferrer"
-          style={{ 
+          style={{
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -245,10 +262,10 @@ export default function LeetCodeTaskCard({ task }: { task: Task }) {
 
       {/* Tags */}
       {task.topicTags && task.topicTags.length > 0 && (
-        <Box sx={{ 
-          display: 'flex', 
-          flexWrap: 'wrap', 
-          gap: 1, 
+        <Box sx={{
+          display: 'flex',
+          flexWrap: 'wrap',
+          gap: 1,
           justifyContent: 'center',
           mb: 3,
           px: 2,
@@ -283,32 +300,61 @@ export default function LeetCodeTaskCard({ task }: { task: Task }) {
         To complete today&apos;s LeetCode task, please copy and paste your solution code from your code editor or the LeetCode website into the dialog by clicking the button below.
       </Typography>
 
-      
-      {/* Upload Button */}
-      <Box
-        onClick={handleUpload}
-        sx={{
-          bgcolor: 'orange',
-          color: 'white',
-          fontSize: '1.2rem',
-          fontWeight: 600,
-          px: 3,
-          py: 2,
-          borderRadius: '25px',
-          textTransform: 'none',
-          transition: 'background-color 0.5s, transform 0.25s cubic-bezier(0.4,0,0.2,1)',
-          '&:hover': {
-            bgcolor: '#FFC15E',
-            transform: 'scale(1.05)',
-          },
-          cursor: 'pointer',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-      >
-        <Upload size={20} style={{ marginRight: 10 }} />
-        UPLOAD
+      {/* Action Buttons */}
+      <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', justifyContent: 'center', mb: 2 }}>
+        {/* Start Interview Button */}
+        <Box
+          onClick={handleStartInterview}
+          sx={{
+            bgcolor: 'rgb(79, 79, 79)',
+            color: 'white',
+            fontSize: '1.2rem',
+            fontWeight: 600,
+            px: 3,
+            py: 2,
+            borderRadius: '25px',
+            textTransform: 'none',
+            transition: 'background-color 0.5s, transform 0.25s cubic-bezier(0.4,0,0.2,1)',
+            '&:hover': {
+              bgcolor: 'rgb(60, 60, 60)',
+              transform: 'scale(1.05)',
+            },
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <MessageCircle size={20} style={{ marginRight: 10 }} />
+          START INTERVIEW
+        </Box>
+
+        {/* Upload Button */}
+        <Box
+          onClick={handleUpload}
+          sx={{
+            bgcolor: 'orange',
+            color: 'white',
+            fontSize: '1.2rem',
+            fontWeight: 600,
+            px: 3,
+            py: 2,
+            borderRadius: '25px',
+            textTransform: 'none',
+            transition: 'background-color 0.5s, transform 0.25s cubic-bezier(0.4,0,0.2,1)',
+            '&:hover': {
+              bgcolor: '#FFC15E',
+              transform: 'scale(1.05)',
+            },
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <Upload size={20} style={{ marginRight: 10 }} />
+          UPLOAD
+        </Box>
       </Box>
 
       {/* Upload Dialog */}

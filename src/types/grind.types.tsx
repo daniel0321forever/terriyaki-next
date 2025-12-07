@@ -1,7 +1,7 @@
 import { Task } from "./task.types";
 
 export interface Grind {
-    id: number;
+    id: string;
     startDate: string;
     duration: number; // in days
     taskToday: Task;
@@ -12,7 +12,7 @@ export interface Grind {
 }
 
 export interface ProgressRecord {
-    id: number;
+    id: string;
     status: 'completed' | 'missed' | 'upcoming';
     date: string;
 }
