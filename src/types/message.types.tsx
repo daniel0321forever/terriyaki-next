@@ -3,7 +3,7 @@ import { Grind } from "./grind.types";
 
 
 export type Message = {
-    id: number;
+    id: string;
     sender: User;
     receiver: User;
     grind: Grind | null;
