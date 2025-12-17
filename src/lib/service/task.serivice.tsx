@@ -40,7 +40,8 @@ export async function submitTask(code: string, language: string) {
 }
 
 export async function getTaskDetail(taskId: string) {
-    const res = await fetch(`${API_BASE}/api/v1/tasks/${taskId}?set-problem=false`, {
+    // set-problem=true ensures problem details (constraints, examples) are loaded
+    const res = await fetch(`${API_BASE}/api/v1/tasks/${taskId}?set-problem=true`, {
         method: "GET",
         headers: {
             "Content-Type": "application/json",

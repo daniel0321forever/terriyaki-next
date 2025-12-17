@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useConversation } from '@elevenlabs/react';
 import {
@@ -20,6 +20,7 @@ import {
   DialogContent,
   DialogContentText,
   DialogActions,
+  Tooltip,
 } from '@mui/material';
 import Editor from '@monaco-editor/react';
 import { Mic, MicOff, Stop } from '@mui/icons-material';
@@ -69,25 +70,96 @@ export default function InterviewPage() {
   } | null>(null);
   const [isEndingInterview, setIsEndingInterview] = useState(false);
   const [showResults, setShowResults] = useState(false);
-  const [showTranscript, setShowTranscript] = useState(true); // Visible by default for split view
+  const [showTranscript, setShowTranscript] = useState(false); // Visible by default for split view
   const [codeSubmitted, setCodeSubmitted] = useState(false);
   const [code, setCode] = useState('');
   const [language, setLanguage] = useState('Python');
   const [isSubmittingCode, setIsSubmittingCode] = useState(false);
   const [showHomeWarning, setShowHomeWarning] = useState(false);
+  const [wasManuallyEnded, setWasManuallyEnded] = useState(false);
 
-  // ElevenLabs SDK hook
+  // Build agent overrides from task data (memoized to avoid recalculation)
+  const agentOverrides = useMemo(() => {
+    if (!task) {
+      return undefined;
+    }
+
+    const codeSection = code ? `
+
+CANDIDATE'S SUBMITTED CODE (${language}):
+\`\`\`${language.toLowerCase()}
+${code}
+\`\`\`
+
+You have access to the candidate's submitted code above. Use it as a reference when asking questions about their implementation, approach, and complexity analysis.` : '';
+
+    const prompt = `You are a technical coding interview assistant helping a candidate practice explaining their LeetCode solution approach. Your role is to conduct a focused, efficient interview that evaluates problem-solving skills and communication.
+
+PROBLEM CONTEXT:
+- Title: ${task.title}
+- Difficulty: ${task.difficulty}
+- Topic tags that might be relevant: ${task.topicTags?.join(', ') || 'N/A'}
+
+PROBLEM DESCRIPTION:
+${task.description}
+
+PROBLEM CONSTRAINTS:
+${task.constraints && task.constraints.length > 0
+  ? task.constraints.map((c, i) => `${i + 1}. ${c}`).join('\n')
+  : 'N/A'}
+
+PROBLEM EXAMPLES:
+${task.examples && task.examples.length > 0
+  ? task.examples.map((ex, i) =>
+      `Example ${i + 1}:\n  Input: ${ex.input}\n  Output: ${ex.output}${ex.explanation ? `\n  Explanation: ${ex.explanation}` : ''}`
+    ).join('\n\n')
+  : 'N/A'}${codeSection}
+
+YOUR TASKS:
+1. Ask Crucial Questions: Focus on key technical aspects:
+   - Time and space complexity analysis
+   - Edge cases and boundary conditions
+   - Algorithm choice and rationale
+   - Data structure selection
+   - Optimization opportunities
+
+2. Guide Thought Process: Help candidates think through their approach step-by-step when they seem stuck or unclear.
+
+3. Evaluate Communication: Assess how well the candidate explains their solution, not just correctness.
+
+4. Provide Constructive Feedback: Offer helpful insights while maintaining a supportive interview environment.
+
+Keep the interview focused and efficient. Ask 2-3 key questions that demonstrate the candidate's understanding of the problem and their solution approach.
+Count the number of times the user responded. End the call after the user responded for the third time with short messages.
+`;
+
+    const firstMessage = `Hi! I'll be interviewing you about the LeetCode problem "${task.title}".
+
+Can you start by explaining your thinking process and approach to solving this problem?`;
+
+    return {
+      agent: {
+        prompt: {
+          prompt: prompt,
+        },
+        firstMessage: firstMessage,
+        language: 'en',
+      },
+    };
+  }, [task, code, language]);
+
+  // ElevenLabs SDK hook with dynamic overrides based on task
   const {
     startSession,
     endSession,
     status,
     isSpeaking,
     sendUserMessage,
+    sendContextualUpdate,
   } = useConversation({
-    // Optional: Add callbacks
+    overrides: agentOverrides,
+    // Callbacks
     onMessage: (message) => {
-      console.log('Received message:', message);
-
       // Extract message text properly
       let messageText = '';
       let messageRole: 'user' | 'agent' = 'agent';
@@ -131,7 +203,8 @@ export default function InterviewPage() {
           saveAgentResponse(agentConfig.session_id, messageText).then(result => {
             // Check if we should end the interview
             if (result.shouldEndInterview) {
-              console.log('Interview reached 3 messages, ending automatically...');
+              console.log('Interview reached limit, ending automatically...');
+              setWasManuallyEnded(false);
               endInterviewSession();
             }
           }).catch(err => {
@@ -161,8 +234,10 @@ export default function InterviewPage() {
         // 1. Get task details
         const taskData = await getTaskDetail(taskId);
         setTask(taskData);
-      setCode(taskData.code || '');
-      setLanguage(taskData.language || 'Python');
+        setCode(taskData.code || '');
+        setLanguage(taskData.language || 'Python');
+        // Mark code as submitted if it already exists
+        setCodeSubmitted(!!taskData.code);
 
         // 2. Get agent token from backend
         const config = await getAgentToken(taskId);
@@ -170,7 +245,7 @@ export default function InterviewPage() {
 
         setIsLoading(false);
       } catch (err: any) {
-        console.error('Initialization error:', err);
+        console.error('Failed to initialize interview:', err);
         setError(err.message || 'Failed to initialize interview');
         setIsLoading(false);
       }
@@ -180,27 +255,31 @@ export default function InterviewPage() {
   }, [taskId]);
 
   const connectToAgent = async () => {
-    if (!agentConfig) return;
+    if (!agentConfig || !task || !agentOverrides) {
+      setError('Interview setup is not ready. Please wait...');
+      return;
+    }
+
+    // Require code submission before starting interview
+    if (!codeSubmitted || !code) {
+      setError('Please submit your code before starting the interview.');
+      return;
+    }
 
     try {
       // Request microphone permission first
       await navigator.mediaDevices.getUserMedia({ audio: true });
 
       // Start conversation session
-      // According to docs, you need either:
-      // 1. agentId + connectionType (for public agents)
-      // 2. signedUrl + connectionType (for authenticated WebSocket)
-      // 3. conversationToken + connectionType (for authenticated WebRTC)
-
       const conversationId = await startSession({
         agentId: agentConfig.agent_id,
-        connectionType: 'webrtc', // or 'websocket'
-        userId: agentConfig.session_id, // optional: your user ID
+        connectionType: 'webrtc',
+        userId: agentConfig.session_id,
       });
 
-      console.log('Conversation started:', conversationId);
+      console.log('Interview started:', conversationId);
     } catch (err: any) {
-      console.error('Connection error:', err);
+      console.error('Failed to start interview:', err);
       setError(`Failed to connect: ${err.message}`);
     }
   };
@@ -222,7 +301,7 @@ export default function InterviewPage() {
       // 1. End ElevenLabs session first
       await endSession();
 
-      // 2. Call backend to end interview and get results
+      // 2. Call backend to end interview and get results (backend will further call Gemini LLM to evaluate the conversation)
       const result = await endInterview(agentConfig.session_id);
       console.log('Interview ended with results:', result);
 
@@ -259,6 +338,19 @@ export default function InterviewPage() {
       setIsSubmittingCode(true);
       await submitTask(code, language);
       setCodeSubmitted(true);
+
+      // Notify the agent with the actual code (if interview is active)
+      if (status === 'connected' && code) {
+        sendContextualUpdate(
+          `The candidate has submitted their code solution in ${language}. Here is their code:
+
+\`\`\`${language.toLowerCase()}
+${code}
+\`\`\`
+
+You can now ask them to explain their implementation, discuss time/space complexity, edge cases, or review their approach. Reference specific parts of their code in your questions.`
+        );
+      }
     } catch (err: any) {
       console.error('Code submit error:', err);
       setError(err.message || 'Failed to submit code');
@@ -293,6 +385,17 @@ export default function InterviewPage() {
     );
   }
 
+  // Ensure task is defined before rendering main content
+  // This guarantees task is not null for the rest of the component
+  if (!task) {
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" minHeight="100vh">
+        <CircularProgress />
+        <Typography sx={{ ml: 2 }}>Loading task details...</Typography>
+      </Box>
+    );
+  }
+
   const isConnected = status === 'connected';
 
   const handleHomeClick = () => {
@@ -322,10 +425,10 @@ export default function InterviewPage() {
     <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
       <CustomAppBar onHomeClick={handleHomeClick} />
       <Box sx={{ pt: '100px', px: { xs: 2, sm: 3, md: 4, lg: 6 }, pb: 4 }}>
-        {/* Header */}
-        <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
+      {/* Header */}
+      <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
           <Typography variant="h4">Check-in Task</Typography>
-          <Chip
+        <Chip
             label={
               isCheckInComplete
                 ? 'Check-in Complete'
@@ -334,8 +437,8 @@ export default function InterviewPage() {
                   : 'Disconnected'
             }
             color={isCheckInComplete ? 'success' : isConnected ? 'info' : 'default'}
-          />
-        </Box>
+        />
+      </Box>
 
       {/* Warning Dialog */}
       <Dialog
@@ -517,7 +620,7 @@ export default function InterviewPage() {
           <Typography variant="h6" gutterBottom sx={{ mb: 2 }}>
             Verbal Interview
           </Typography>
-          
+
           {/* Conversation Transcript */}
           <Box sx={{ mb: 3, flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
             <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
@@ -592,35 +695,50 @@ export default function InterviewPage() {
           {/* Audio Controls */}
           <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', justifyContent: 'center', pt: 2, borderTop: 1, borderColor: 'divider' }}>
             {!isConnected ? (
-              <Button
-                variant="contained"
-                size="large"
-                onClick={connectToAgent}
-                disabled={!agentConfig}
-                sx={{
-                  textTransform: 'none',
-                  fontSize: '1.1rem',
-                  fontWeight: 600,
-                  px: 4,
-                  py: 1.5,
-                  bgcolor: 'rgba(79, 79, 79, 0.86)',
-                  color: 'white',
-                  borderRadius: '25px',
-                  boxShadow: '0 4px 14px 0 rgba(0, 0, 0, 0.2)',
-                  '&:hover': {
-                    bgcolor: 'rgba(60, 60, 60, 0.95)',
-                    boxShadow: '0 6px 20px 0 rgba(0, 0, 0, 0.3)',
-                    transform: 'translateY(-1px)',
-                  },
-                  '&:disabled': {
-                    bgcolor: 'rgba(79, 79, 79, 0.5)',
-                    color: 'rgba(255, 255, 255, 0.7)',
-                  },
-                  transition: 'all 0.3s ease-in-out',
-                }}
-              >
-                Start Interview
-              </Button>
+              <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
+                <Tooltip
+                  title={!codeSubmitted ? "Please submit your code first" : ""}
+                  arrow
+                  placement="top"
+                >
+                  <span>
+                    <Button
+                      variant="contained"
+                      size="large"
+                      onClick={connectToAgent}
+                      disabled={!agentConfig || !codeSubmitted}
+                      sx={{
+                        textTransform: 'none',
+                        fontSize: '1.1rem',
+                        fontWeight: 600,
+                        px: 4,
+                        py: 1.5,
+                        bgcolor: 'rgba(79, 79, 79, 0.86)',
+                        color: 'white',
+                        borderRadius: '25px',
+                        boxShadow: '0 4px 14px 0 rgba(0, 0, 0, 0.2)',
+                        '&:hover': {
+                          bgcolor: 'rgba(60, 60, 60, 0.95)',
+                          boxShadow: '0 6px 20px 0 rgba(0, 0, 0, 0.3)',
+                          transform: 'translateY(-1px)',
+                        },
+                        '&:disabled': {
+                          bgcolor: 'rgba(79, 79, 79, 0.5)',
+                          color: 'rgba(255, 255, 255, 0.7)',
+                        },
+                        transition: 'all 0.3s ease-in-out',
+                      }}
+                    >
+                      Start Interview
+                    </Button>
+                  </span>
+                </Tooltip>
+                {!codeSubmitted && (
+                  <Typography variant="caption" color="warning.main" sx={{ fontWeight: 500 }}>
+                    ⚠️ Submit your code first
+                  </Typography>
+                )}
+              </Box>
             ) : (
               <>
                 <Chip
@@ -633,7 +751,10 @@ export default function InterviewPage() {
                   variant="contained"
                   size="large"
                   startIcon={<Stop />}
-                  onClick={endInterviewSession}
+                  onClick={() => {
+                    setWasManuallyEnded(true);
+                    endInterviewSession();
+                  }}
                   disabled={isEndingInterview || showResults}
                   sx={{
                     textTransform: 'none',
@@ -679,10 +800,20 @@ export default function InterviewPage() {
 
       {/* Interview Results Section */}
       {showResults && interviewResults && (
-        <Paper sx={{ p: 3, mb: 3, bgcolor: codeSubmitted ? 'success.light' : 'info.light', color: codeSubmitted ? 'success.contrastText' : 'info.contrastText' }}>
+        <Paper sx={{
+          p: 3,
+          mb: 3,
+          bgcolor: wasManuallyEnded ? 'warning.light' : (codeSubmitted ? 'success.light' : 'info.light'),
+          color: wasManuallyEnded ? 'warning.contrastText' : (codeSubmitted ? 'success.contrastText' : 'info.contrastText'),
+        }}>
           <Typography variant="h5" gutterBottom>
             Interview Completed! 🎉
           </Typography>
+          {wasManuallyEnded && (
+            <Typography variant="body2" sx={{ mb: 2, fontStyle: 'italic' }}>
+              Interview was ended manually before completion.
+            </Typography>
+          )}
           {!codeSubmitted && (
             <Typography variant="body2" sx={{ mb: 2, fontStyle: 'italic' }}>
               Don't forget to submit your code above to complete your check-in!
@@ -698,9 +829,33 @@ export default function InterviewPage() {
               <Typography variant="body1">
                 <strong>Score:</strong> {interviewResults.evaluation.score || 'N/A'}/100
               </Typography>
-              <Typography variant="body2" sx={{ mt: 1, whiteSpace: 'pre-wrap' }}>
-                <strong>Feedback:</strong> {interviewResults.evaluation.feedback || 'No feedback available'}
-              </Typography>
+              <Box sx={{ mt: 1 }}>
+                <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 1 }}>Feedback:</Typography>
+                <Typography
+                  variant="body2"
+                  component="div"
+                  sx={{
+                    '& p': { mb: 1, lineHeight: 1.6 },
+                    '& strong': { fontWeight: 700 },
+                    '& ul': { pl: 3, my: 1 },
+                    '& li': { mb: 0.5 },
+                  }}
+                  dangerouslySetInnerHTML={{
+                    __html: (interviewResults.evaluation.feedback || 'No feedback available')
+                      // Convert **bold** to <strong>
+                      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                      // Convert - list items to <li>
+                      .replace(/^- (.+)$/gm, '<li>$1</li>')
+                      // Wrap consecutive <li> in <ul>
+                      .replace(/(<li>.*<\/li>\n?)+/g, '<ul>$&</ul>')
+                      // Convert double newlines to paragraph breaks
+                      .replace(/\n\n/g, '</p><p>')
+                      // Wrap in paragraphs
+                      .replace(/^(.)/,'<p>$1')
+                      .replace(/(.)$/,'$1</p>')
+                  }}
+                />
+              </Box>
               {interviewResults.evaluation.strengths && interviewResults.evaluation.strengths.length > 0 && (
                 <Box sx={{ mt: 2 }}>
                   <Typography variant="subtitle2"><strong>Strengths:</strong></Typography>
@@ -748,8 +903,8 @@ export default function InterviewPage() {
             Back to Grind
           </Button>
         </Paper>
-      )}
-      </Box>
+          )}
+        </Box>
     </Box>
   );
 }
