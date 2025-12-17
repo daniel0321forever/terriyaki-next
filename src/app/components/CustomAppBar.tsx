@@ -21,9 +21,10 @@ import MessageIcon from './MessageIcon';
 
 interface AppBarProps {
   title?: string;
+  onHomeClick?: () => void;
 }
 
-const CustomAppBar: React.FC<AppBarProps> = () => {
+const CustomAppBar: React.FC<AppBarProps> = ({ onHomeClick }) => {
   const router = useRouter();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
@@ -31,7 +32,11 @@ const CustomAppBar: React.FC<AppBarProps> = () => {
   const setGrind = useGrindStore((state) => state.setCurrentGrind);
 
   const handleHomeClick = () => {
-    router.push('/');
+    if (onHomeClick) {
+      onHomeClick();
+    } else {
+      router.push('/');
+    }
   };
 
   const handleAccountClick = (event: React.MouseEvent<HTMLElement>) => {

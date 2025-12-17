@@ -1,5 +1,11 @@
+export interface Example {
+    input: string;
+    output: string;
+    explanation?: string;
+}
+
 export interface Task {
-    id: number;
+    id: string;
     type: 'LeetCode' | 'GRE';
     title: string;
     description: string;
@@ -8,4 +14,6 @@ export interface Task {
     language: string | null;
     difficulty: 'Easy' | 'Medium' | 'Hard';
     topicTags: string[];
+    constraints?: string[];
+    examples?: Example[];
 }

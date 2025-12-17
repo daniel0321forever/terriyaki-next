@@ -1,169 +1,24 @@
-import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Task } from '@/types/task.types';
-import { Typography } from '@mui/material';
-import { Box } from '@mui/material';
-import { Dialog } from '@mui/material';
-import { DialogTitle } from '@mui/material';
-import { DialogContent } from '@mui/material';
-import { DialogActions } from '@mui/material';
-import { Button } from '@mui/material';
-import { Select } from '@mui/material';
-import { MenuItem } from '@mui/material';
-import { FormControl } from '@mui/material';
-import { InputLabel } from '@mui/material';
-import { Chip } from '@mui/material';
-import { Upload } from 'lucide-react';
-import Editor from '@monaco-editor/react';
-import { submitTask } from '@/lib/service/task.serivice';
-
-function UploadDialog({ task, open, onClose }: { task: Task, open: boolean, onClose: () => void }) {
-  const [code, setCode] = useState(task.code || '');
-  const [language, setLanguage] = useState(task.language || 'javascript');
-  
-  const languages = [
-    { value: 'javascript', label: 'JavaScript' },
-    { value: 'typescript', label: 'TypeScript' },
-    { value: 'python', label: 'Python' },
-    { value: 'java', label: 'Java' },
-    { value: 'cpp', label: 'C++' },
-    { value: 'c', label: 'C' },
-    { value: 'csharp', label: 'C#' },
-    { value: 'go', label: 'Go' },
-    { value: 'rust', label: 'Rust' },
-    { value: 'kotlin', label: 'Kotlin' },
-    { value: 'swift', label: 'Swift' },
-  ];
-  
-  const handleSubmit = () => {
-    submitTask(code, language);
-    onClose();
-  };
-
-  return (
-    <Dialog 
-      open={open} 
-      onClose={onClose}
-      fullWidth
-      maxWidth="lg"
-      sx={{
-        '& .MuiDialog-paper': {
-          width: '65vw',
-          backgroundColor: 'rgb(61, 61, 61)',
-          color: 'white',
-        }
-      }}
-    >
-      <DialogTitle sx={{ fontSize: '1.5rem', fontWeight: 600, mt: 2 }}>
-        Submit Your Code
-      </DialogTitle>
-      <DialogContent>
-        <FormControl 
-          fullWidth 
-          sx={{ 
-            mb: 2, 
-            mt: 1,
-            '& .MuiOutlinedInput-root': {
-              '& fieldset': {
-                borderColor: 'white',
-              },
-              '&:hover fieldset': {
-                borderColor: '#FFC15E',
-              },
-            }
-          }}
-        >
-          <InputLabel id="language-select-label" sx={{ color: 'white' }}>Language</InputLabel>
-          <Select
-            labelId="language-select-label"
-            id="language-select"
-            value={language}
-            label="Language"
-            onChange={(e) => setLanguage(e.target.value)}
-            sx={{
-              textTransform: 'none',
-              color: 'white',
-              '& .MuiSelect-icon': {
-                color: 'white',
-              },
-            }}
-          >
-            {languages.map((lang) => (
-              <MenuItem key={lang.value} value={lang.value}>
-                {lang.label}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-        <Box sx={{ 
-          border: '1px solid',
-          borderColor: 'divider',
-          borderRadius: 1,
-          overflow: 'hidden',
-        }}>
-          <Editor
-            height="400px"
-            language={language}
-            value={code}
-            onChange={(value) => setCode(value || '')}
-            theme="vs-white"
-            options={{
-              minimap: { enabled: false },
-              fontSize: 14,
-              lineNumbers: 'on',
-              scrollBeyondLastLine: false,
-              automaticLayout: true,
-              tabSize: 2,
-              wordWrap: 'on',
-              padding: { top: 16, bottom: 16 },
-              suggestOnTriggerCharacters: true,
-              quickSuggestions: true,
-            }}
-          />
-        </Box>
-      </DialogContent>
-      <DialogActions sx={{ px: 3, pb: 3 }}>
-        <Button 
-          onClick={onClose}
-          sx={{ 
-            bgcolor: 'rgba(79, 79, 79, 0.86)',
-            color: 'text.white',
-            textTransform: 'none',
-            fontSize: '1rem',
-          }}
-        >
-          Cancel
-        </Button>
-        <Button 
-          onClick={handleSubmit}
-          variant="contained"
-          sx={{ 
-            bgcolor: 'orange',
-            textTransform: 'none',
-            fontSize: '1rem',
-            fontWeight: 600,
-            px: 3,
-            '&:hover': {
-              bgcolor: '#FFC15E',
-            }
-          }}
-        >
-          Submit
-        </Button>
-      </DialogActions>
-    </Dialog>
-  );
-}
+import { Typography, Box, Chip } from '@mui/material';
+import { Check } from 'lucide-react';
 
 export default function LeetCodeTaskCard({ task }: { task: Task }) {
-  const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
-  
+  const router = useRouter();
 
-  const handleUpload = () => {
-    setUploadDialogOpen(true);
-  };
-
-  const handleCloseDialog = () => {
-    setUploadDialogOpen(false);
+  const handleStartInterview = () => {
+    if (typeof task.id !== 'string') {
+      console.error('Invalid task ID type:', {
+        id: task.id,
+        type: typeof task.id,
+        expected: 'string (UUID)',
+        actual: typeof task.id,
+        task: task
+      });
+      alert(`Task ID must be a string (UUID), but got ${typeof task.id}.`);
+      return;
+    }
+    router.push(`/interview/${task.id}`);
   };
 
   const getDifficultyColor = (difficulty: 'Easy' | 'Medium' | 'Hard') => {
@@ -181,7 +36,7 @@ export default function LeetCodeTaskCard({ task }: { task: Task }) {
 
   return (
     <Box sx={{ p: 4, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-      
+
       {/* TODAY Header */}
       <Typography
         variant="h5"
@@ -191,8 +46,8 @@ export default function LeetCodeTaskCard({ task }: { task: Task }) {
       </Typography>
 
       {/* Title with Difficulty Badge */}
-      <Box sx={{ 
-        display: 'flex', 
+      <Box sx={{
+        display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
         gap: 2,
@@ -220,7 +75,7 @@ export default function LeetCodeTaskCard({ task }: { task: Task }) {
           href={task.url ?? ''}
           target="_blank"
           rel="noopener noreferrer"
-          style={{ 
+          style={{
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -245,10 +100,10 @@ export default function LeetCodeTaskCard({ task }: { task: Task }) {
 
       {/* Tags */}
       {task.topicTags && task.topicTags.length > 0 && (
-        <Box sx={{ 
-          display: 'flex', 
-          flexWrap: 'wrap', 
-          gap: 1, 
+        <Box sx={{
+          display: 'flex',
+          flexWrap: 'wrap',
+          gap: 1,
           justifyContent: 'center',
           mb: 3,
           px: 2,
@@ -283,36 +138,34 @@ export default function LeetCodeTaskCard({ task }: { task: Task }) {
         To complete today&apos;s LeetCode task, please copy and paste your solution code from your code editor or the LeetCode website into the dialog by clicking the button below.
       </Typography>
 
-      
-      {/* Upload Button */}
-      <Box
-        onClick={handleUpload}
-        sx={{
-          bgcolor: 'orange',
-          color: 'white',
-          fontSize: '1.2rem',
-          fontWeight: 600,
-          px: 3,
-          py: 2,
-          borderRadius: '25px',
-          textTransform: 'none',
-          transition: 'background-color 0.5s, transform 0.25s cubic-bezier(0.4,0,0.2,1)',
-          '&:hover': {
-            bgcolor: '#FFC15E',
-            transform: 'scale(1.05)',
-          },
-          cursor: 'pointer',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-      >
-        <Upload size={20} style={{ marginRight: 10 }} />
-        UPLOAD
+      {/* Action Buttons */}
+      <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', justifyContent: 'center', mb: 2 }}>
+        <Box
+          onClick={handleStartInterview}
+          sx={{
+            bgcolor: 'rgb(79, 79, 79)',
+            color: 'white',
+            fontSize: '1.2rem',
+            fontWeight: 600,
+            px: 3,
+            py: 2,
+            borderRadius: '25px',
+            textTransform: 'none',
+            transition: 'background-color 0.5s, transform 0.25s cubic-bezier(0.4,0,0.2,1)',
+            '&:hover': {
+              bgcolor: 'rgb(60, 60, 60)',
+              transform: 'scale(1.05)',
+            },
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <Check size={20} style={{ marginRight: 10 }} />
+          CHECK IN
+        </Box>
       </Box>
-
-      {/* Upload Dialog */}
-      <UploadDialog task={task} open={uploadDialogOpen} onClose={handleCloseDialog} />
     </Box>
   );
 }
