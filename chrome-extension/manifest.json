@@ -1,0 +1,45 @@
+{
+  "manifest_version": 3,
+  "name": "LeetCode Grind Task Tracker",
+  "version": "1.0.0",
+  "description": "Remind and track your daily LeetCode tasks and automatically submit solutions",
+  "permissions": [
+    "storage",
+    "activeTab",
+    "tabs",
+    "alarms",
+    "cookies"
+  ],
+  "host_permissions": [
+    "https://leetcode.com/*",
+    "http://localhost:8080/*",
+    "http://localhost:3000/*",
+    "http://localhost:3001/*",
+    "https://terriyaki.com/*",
+    "https://*.terriyaki.com/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://leetcode.com/problems/*"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icon16.png",
+      "48": "icon48.png",
+      "128": "icon128.png"
+    }
+  },
+  "icons": {
+    "16": "icon16.png",
+    "48": "icon48.png",
+    "128": "icon128.png"
+  }
+}
+
