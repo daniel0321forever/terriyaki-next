@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Terriyaki - Today's Task</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div style="flex: 1; min-width: 0;">
+        <h1>🎯 Terriyaki</h1>
+        <div id="userInfo" class="user-info">
+          <span id="username">Loading...</span>
+        </div>
+      </div>
+      <button id="settingsBtn" class="settings-btn" title="Settings">⚙️</button>
+    </div>
+
+    <!-- Settings Panel -->
+    <div id="settingsPanel" class="settings-panel hidden">
+      <h3>Settings</h3>
+      <div class="form-group">
+        <label for="apiUrl">API Base URL:</label>
+        <input type="text" id="apiUrl" placeholder="http://localhost:8080">
+      </div>
+      <div class="form-group">
+        <label for="authToken">Auth Token:</label>
+        <div style="display: flex; gap: 8px;">
+          <input type="password" id="authToken" placeholder="Your auth token" style="flex: 1;">
+          <button id="importTokenBtn" class="btn btn-secondary" style="white-space: nowrap; padding: 8px 12px;" title="Import token from Terriyaki website">📥 Import</button>
+        </div>
+        <small>Get this from your browser cookies after logging in, or click "Import" to auto-detect</small>
+      </div>
+      <button id="saveSettings" class="btn btn-primary">Save Settings</button>
+      <button id="testConnection" class="btn btn-secondary">Test Connection</button>
+    </div>
+
+    <!-- Main Content -->
+    <div id="mainContent">
+      <!-- Loading State -->
+      <div id="loadingState" class="state">
+        <div class="spinner"></div>
+        <p>Loading today's task...</p>
+      </div>
+
+      <!-- Error State -->
+      <div id="errorState" class="state hidden">
+        <div class="error-icon">⚠️</div>
+        <p id="errorMessage"></p>
+        <button id="retryBtn" class="btn btn-primary">Retry</button>
+      </div>
+
+      <!-- No Task State -->
+      <div id="noTaskState" class="state hidden">
+        <div class="success-icon">✅</div>
+        <p>No active task for today!</p>
+        <p class="subtext">Great job staying on track!</p>
+      </div>
+
+      <!-- Task Display (Pending) -->
+      <div id="taskState" class="state hidden">
+        <div class="task-header-new">
+          <h2 id="taskTitle" class="task-title">LeetCode Problem</h2>
+          <span class="status-badge" id="statusBadge">Incomplete</span>
+        </div>
+        <p class="task-description" id="taskDescription"></p>
+        <div id="leaderboardToggle" class="leaderboard-toggle hidden">
+          <div class="leaderboard-header" id="leaderboardHeader">
+            <span class="leaderboard-text">
+              <span id="completedCount">0</span>/<span id="totalCount">0</span> solved
+            </span>
+            <span class="toggle-icon" id="toggleIcon">▼</span>
+          </div>
+          <div id="leaderboardList" class="leaderboard-list hidden">
+            <div id="leaderboardParticipants"></div>
+          </div>
+        </div>
+        
+        <div class="task-actions">
+          <a id="leetcodeLink" href="#" target="_blank" class="btn btn-primary">
+            🚀 Open on LeetCode
+          </a>
+        </div>
+
+        <!-- Auto-submit Status -->
+        <div id="autoSubmitStatus" class="auto-submit-status hidden">
+          <div class="status-indicator">
+            <span class="status-dot"></span>
+            <span id="autoSubmitText">Monitoring LeetCode for solution...</span>
+          </div>
+        </div>
+
+        <!-- Interview Option (shown after submission) -->
+        <div id="interviewSection" class="interview-section hidden">
+          <div class="divider"></div>
+          <h3>🎤 Practice Interview</h3>
+          <p class="subtext">Start an AI-powered interview about this problem</p>
+          <button id="startInterviewBtn" class="btn btn-interview">
+            Start Interview
+          </button>
+        </div>
+      </div>
+
+      <!-- Completed Task State -->
+      <div id="completedState" class="state hidden">
+        <div class="task-header-new">
+          <h2 id="completedTaskTitle" class="task-title">LeetCode Problem</h2>
+          <span class="status-badge completed" id="completedStatusBadge">Completed</span>
+        </div>
+        <p class="task-description" id="completedTaskDescription"></p>
+        <div id="completedLeaderboardToggle" class="leaderboard-toggle hidden">
+          <div class="leaderboard-header" id="completedLeaderboardHeader">
+            <span class="leaderboard-text">
+              <span id="completedCount2">0</span>/<span id="totalCount2">0</span> solved
+            </span>
+            <span class="toggle-icon" id="completedToggleIcon">▼</span>
+          </div>
+          <div id="completedLeaderboardList" class="leaderboard-list hidden">
+            <div id="completedLeaderboardParticipants"></div>
+          </div>
+        </div>
+        <div class="task-actions">
+          <a id="completedLeetcodeLink" href="#" target="_blank" class="btn btn-primary">
+            🚀 Open on LeetCode
+          </a>
+        </div>
+        <div id="completedInterviewSection" class="interview-section">
+          <div class="divider"></div>
+          <h3>🎤 Practice Interview</h3>
+          <p class="subtext">Start an AI-powered interview about this problem</p>
+          <button id="startCompletedInterviewBtn" class="btn btn-interview">
+            Start Interview
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>
+
