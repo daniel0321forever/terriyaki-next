@@ -150,7 +150,7 @@ export async function getGrinds() {
     }
 }
 
-export async function quitGrind(grindId: number) {
+export async function quitGrind(grindId: string) {
     const res = await fetch(`${API_BASE}/api/v1/grinds/${grindId}/quit`, {
         method: "POST",
         headers: {

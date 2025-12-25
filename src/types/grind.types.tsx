@@ -8,12 +8,12 @@ export interface Grind {
     budget: number;
     progress: ProgressRecord[];
     participants: Participant[];
-    quit: boolean;
+    quitted: boolean; // true if the grind has been quitted
 }
 
 export interface ProgressRecord {
     id: string;
-    status: 'completed' | 'missed' | 'upcoming';
+    status: 'completed' | 'missed' | 'pending';
     date: string;
 }
 

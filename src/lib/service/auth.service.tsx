@@ -4,7 +4,7 @@ import { Grind } from "@/types/grind.types";
 import { API_BASE, isDev } from "@/config/config";
 
 export async function login(email: string, password: string) {
-  const res = await fetch(`${API_BASE}/api/v1/login`, {
+  const res = await fetch(`${API_BASE}/api/v2/login`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -22,9 +22,9 @@ export async function login(email: string, password: string) {
       Cookies.set("token", data.token);
 
       const user: User = data.user;
-      const currentGrind: Grind = data.grind;
+      const grinds: { [key: string]: Grind } = data.grinds;
 
-      return { user, currentGrind };
+      return { user, grinds };
 
     // TODO: make this error visible to the user
       case 400:
@@ -109,7 +109,7 @@ export async function logout() {
 }
 
 export async function verifyToken() {
-  const res = await fetch(`${API_BASE}/api/v1/verify-token`, {
+  const res = await fetch(`${API_BASE}/api/v2/verify-token`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -123,9 +123,11 @@ export async function verifyToken() {
       if (isDev) {
         console.log("status: ", res.status, "data: ", data);
       }
+
       const user: User = data.user;
-      const currentGrind: Grind | null = data.grind;
-      return { user: user, currentGrind: currentGrind };
+      const grinds: { [key: string]: Grind } = data.grinds;
+
+      return { user: user, grinds: grinds };
     case 401:
       if (isDev) {
         console.warn("status: ", res.status, "error: ", data);
@@ -136,5 +138,33 @@ export async function verifyToken() {
         console.error("status: ", res.status, "error: ", data);
       }
       throw new Error(data.errorCode);
+  }
+}
+
+export async function checkEmailExists(email: string) {
+  const res = await fetch(`${API_BASE}/api/v1/users/exists?email=${email}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  const data = await res.json();
+  switch (res.status) {
+    case 200:
+      if (isDev) {
+        console.log("status: ", res.status, "data: ", data);
+      }
+      return data.exists;
+    case 400:
+      if (isDev) {
+        console.warn("status: ", res.status, "error: ", data);
+      }
+      return false;
+    default:
+      if (isDev) {
+        console.error("status: ", res.status, "error: ", data);
+      }
+      return false;
   }
 }

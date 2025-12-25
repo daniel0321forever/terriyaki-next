@@ -15,16 +15,16 @@ import { UserStoreState } from '@/lib/stores/auth.store';
 export default function LoginPage() {
   const router = useRouter();
   const setUser = useUserStore((state: UserStoreState) => state.setUser);
-  const setGrind = useGrindStore((state) => state.setCurrentGrind);
+  const setGrinds = useGrindStore((state) => state.setGrinds);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
 
-    login(email, password).then(({ user, currentGrind }) => {
+    login(email, password).then(({ user, grinds }) => {
       setUser(user);
-      setGrind(currentGrind);
+      setGrinds(grinds);
       router.push('/');
     }).catch((error) => {
       switch (error.message) {
@@ -43,7 +43,6 @@ export default function LoginPage() {
       sx={{
         minHeight: '100vh',
         display: 'flex',
-        backgroundColor: '#f5e6d3',
         alignItems: 'center',
         justifyContent: 'center',
         px: { xs: 3, sm: 4 },

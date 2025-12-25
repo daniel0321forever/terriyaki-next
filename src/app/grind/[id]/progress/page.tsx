@@ -4,7 +4,7 @@ import { Box, Typography, Avatar, Divider, Card, CardContent, CircularProgress, 
 import ProgressGrid from '@/app/components/ProgressGrid';
 import CustomAppBar from '@/app/components/CustomAppBar';
 import BackButton from '@/app/components/BackButton';
-import UserAvatarSelector from '@/app/grind/progress/components/UserAvatarSelector';
+import UserAvatarSelector from '@/app/grind/[id]/progress/components/UserAvatarSelector';
 import { useState, useRef } from 'react';
 import { useGrindStore } from '@/lib/stores/grind.store';
 import { Grind, Participant, ProgressRecord } from '@/types/grind.types';
@@ -14,9 +14,12 @@ import { getTaskDetail } from '@/lib/service/task.serivice';
 import Editor from '@monaco-editor/react';
 import { User } from '@/types/user.types';
 import { UserStoreState } from '@/lib/stores/auth.store';
+import { useParams } from 'next/navigation';
 
 export default function GrindProgress() {
-  const grind: Grind | null = useGrindStore((state) => state.currentGrind);
+  const params = useParams();
+  const id = params?.id as string;
+  const grind: Grind | null = useGrindStore((state) => state.grinds[id]);
   const [selectedUserId, setSelectedUserId] = useState<string>('current');
   const currentUser: User | null = useUserStore((state: UserStoreState) => state.user);
   
@@ -27,7 +30,7 @@ export default function GrindProgress() {
   const [error, setError] = useState<string | null>(null);
   
   // Cache for task details - using useRef to persist across re-renders
-  const taskCacheRef = useRef<Map<number, Task>>(new Map());
+  const taskCacheRef = useRef<Map<string, Task>>(new Map());
 
   if (!grind) {
     return (
@@ -64,7 +67,7 @@ export default function GrindProgress() {
     const statusMap = {
       completed: 'Completed',
       missed: 'Missed',
-      upcoming: 'Upcoming'
+      pending: 'Pending'
     };
     return statusMap[status] || status.charAt(0).toUpperCase() + status.slice(1);
   };
@@ -109,7 +112,7 @@ export default function GrindProgress() {
 
         {/* Right Content - Selected User's Progress */}
         <Box sx={{ flex: 1, maxWidth: '800px' }}>
-          <BackButton href={`/grind`} />
+          <BackButton href={`/grind/${id}`} />
           
           {/* Header */}
           <Typography
@@ -243,7 +246,7 @@ export default function GrindProgress() {
                         <Typography variant="body2" sx={{ fontSize: '0.9rem', color: 'text.secondary' }}>
                           {selectedProgressRecord.status === 'missed' 
                             ? 'This task was missed. No code submission is available.'
-                            : 'This task is upcoming. Code submission will be available after completion.'}
+                            : 'This task is pending. Code submission will be available after completion.'}
                         </Typography>
                       </Box>
                     )}

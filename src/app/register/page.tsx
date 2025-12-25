@@ -54,7 +54,6 @@ export default function RegisterPage() {
       sx={{
         minHeight: '100vh',
         display: 'flex',
-        backgroundColor: '#f5e6d3',
         alignItems: 'center',
         justifyContent: 'center',
         px: { xs: 3, sm: 4 },
