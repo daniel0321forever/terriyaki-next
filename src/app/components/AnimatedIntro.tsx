@@ -62,7 +62,7 @@ export default function AnimatedIntro() {
           letterSpacing: '-0.01em',
         }}
       >
-        Your daily LeetCode tracker
+        Let's do LeetCode together
       </Typography>
 
       {/* Introduction, now with icons for each item */}

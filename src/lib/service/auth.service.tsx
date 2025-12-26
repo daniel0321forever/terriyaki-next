@@ -26,12 +26,12 @@ export async function login(email: string, password: string) {
 
       return { user, grinds };
 
-    // TODO: make this error visible to the user
       case 400:
       if (isDev) {
         console.warn("status: ", res.status, "error: ", data);
       }
-      throw new Error("invalid-email");
+      
+      throw new Error(data.errorCode);
     case 401:
       if (isDev) {
         console.warn("status: ", res.status, "error: ", data);

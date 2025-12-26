@@ -28,7 +28,7 @@ const menuItems: MenuItem[] = [
   { id: 'create-new', label: 'Create New Grind', icon: PlusCircle },
   { id: 'invitations', label: 'Invitations', icon: Mail },
   { id: 'my-records', label: 'My Records', icon: Award },
-  { id: 'mocking-interview', label: 'Mocking Interview Test', icon: Briefcase },
+  { id: 'mocking-interview', label: 'Interview Test', icon: Briefcase },
 ];
 
 const menuItemTitles: Record<MenuItemType, string> = {
@@ -36,11 +36,10 @@ const menuItemTitles: Record<MenuItemType, string> = {
   'create-new': 'Create New Grind',
   'invitations': 'Invitations',
   'my-records': 'My Records',
-  'mocking-interview': 'Mocking Interview Test',
+  'mocking-interview': 'Interview Test',
 };
 
 export default function GrindHomePageView() {
-  const grind: Grind | null = useGrindStore((state) => state.currentGrind);
   const [activeMenu, setActiveMenu] = useState<MenuItemType>('current-grinds');
 
   const handleCreate = () => {
@@ -109,7 +108,7 @@ export default function GrindHomePageView() {
                     onClick={() => setActiveMenu(item.id)}
                     sx={{
                       borderRadius: '8px',
-                      backgroundColor: isActive ? 'rgba(0, 0, 0, 0.08)' : 'transparent',
+                      backgroundㄎㄛColor: isActive ? 'rgba(0, 0, 0, 0.08)' : 'transparent',
                       '&:hover': {
                         backgroundColor: isActive ? 'rgba(0, 0, 0, 0.12)' : 'rgba(0, 0, 0, 0.04)',
                       },

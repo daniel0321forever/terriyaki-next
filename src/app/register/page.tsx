@@ -34,7 +34,7 @@ export default function RegisterPage() {
 
     register(email, password, name).then((user) => {
       setUser(user);
-      router.push('/grind/new');
+      router.push('/');
     }).catch((error) => {
       switch (error.message) {
         case "DUPLICATE_ENTRY":

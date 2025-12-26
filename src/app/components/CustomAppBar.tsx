@@ -15,10 +15,11 @@ import {
 } from '@mui/icons-material';
 import { useRouter } from 'next/navigation';
 import { logout } from '@/lib/service/auth.service';
-import { useUserStore } from '@/lib/stores/auth.store';
+import { UserStoreState, useUserStore } from '@/lib/stores/auth.store';
 import { useGrindStore } from '@/lib/stores/grind.store';
 import MessageIcon from './MessageIcon';
 import { Grind } from '@/types/grind.types';
+import { User } from '@/types/user.types';
 
 interface AppBarProps {
   title?: string;
@@ -31,6 +32,8 @@ const CustomAppBar: React.FC<AppBarProps> = ({ onHomeClick }) => {
   const open = Boolean(anchorEl);
   const setUser = useUserStore((state) => state.setUser);
   const setGrinds = useGrindStore((state) => state.setGrinds);
+
+  const currentUser: User | null = useUserStore((state: UserStoreState) => state.user);
 
   const handleHomeClick = () => {
     if (onHomeClick) {
@@ -146,6 +149,7 @@ const CustomAppBar: React.FC<AppBarProps> = ({ onHomeClick }) => {
               overflow: 'visible',
               filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
               mt: 1.5,
+              alignItems: 'center',
               '& .MuiAvatar-root': {
                 width: 32,
                 height: 32,
@@ -169,7 +173,7 @@ const CustomAppBar: React.FC<AppBarProps> = ({ onHomeClick }) => {
           transformOrigin={{ horizontal: 'right', vertical: 'top' }}
           anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
         >
-          <MenuItem onClick={handleProfileClick}>
+          <MenuItem>
             <Typography>Profile</Typography>
           </MenuItem>
           <MenuItem onClick={handleLogoutClick}>
