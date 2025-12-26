@@ -43,3 +43,20 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## Features
+
+### Voice Changer
+
+The frontend includes a Voice Changer page that allows users to convert audio files to different voices using ElevenLabs Speech-to-Speech API.
+
+**Route**: `/voice`
+
+Features:
+- Upload audio files (mp3, wav, m4a, etc.)
+- Convert to different voices
+- Adjustable parameters (style, stability, noise removal)
+- Preview original and converted audio
+- Download converted audio files
+
+For backend API documentation, see the backend [README](../terriyaki-go/README.md) and [Voice Changer docs](../terriyaki-go/docs/VOICE_CHANGER.md).
