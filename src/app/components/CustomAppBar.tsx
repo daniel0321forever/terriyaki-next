@@ -8,6 +8,7 @@ import {
   Typography,
   Menu,
   MenuItem,
+  Avatar,
 } from '@mui/material';
 import {
   Home as HomeIcon,
@@ -53,7 +54,7 @@ const CustomAppBar: React.FC<AppBarProps> = ({ onHomeClick }) => {
 
   const handleProfileClick = () => {
     handleMenuClose();
-    router.push('/');
+    router.push('/profile');
   };
 
   const handleLogoutClick = async () => {
@@ -127,12 +128,24 @@ const CustomAppBar: React.FC<AppBarProps> = ({ onHomeClick }) => {
                 color: 'grey.500',
               },
               transition: 'all 0.2s ease-in-out',
-              '& svg': {
+              '& svg, & .MuiAvatar-root': {
                 fontSize: '2.5rem',
+                width: '2.5rem',
+                height: '2.5rem',
               },
+              display: 'flex',
+              alignItems: 'center',
             }}
           >
-            <AccountCircleIcon />
+            {currentUser && currentUser.avatar && currentUser.avatar !== 'none' && currentUser.avatar.trim() !== '' ? (
+              <Avatar
+                alt={currentUser.username}
+                src={currentUser.avatar}
+                sx={{ width: '2.5rem', height: '2.5rem', bgcolor: 'grey.200', fontSize: '1.3rem' }}
+              />
+            ) : (
+              <AccountCircleIcon />
+            )}
           </Box>
         </Box>
 
@@ -173,7 +186,7 @@ const CustomAppBar: React.FC<AppBarProps> = ({ onHomeClick }) => {
           transformOrigin={{ horizontal: 'right', vertical: 'top' }}
           anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
         >
-          <MenuItem>
+          <MenuItem onClick={handleProfileClick}>
             <Typography>Profile</Typography>
           </MenuItem>
           <MenuItem onClick={handleLogoutClick}>
