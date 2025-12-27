@@ -3,15 +3,23 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
 type GrindStoreState = {
-    currentGrind: Grind | null;
-    setCurrentGrind: (grind: Grind | null) => void;
+    grinds: { [key: string]: Grind };
+    setGrinds: (grinds: { [key: string]: Grind }) => void;
+    addGrind: (grind: Grind) => void;
 }
 
 export const useGrindStore = create<GrindStoreState>()(
     persist(
         (set) => ({
-            currentGrind: null,
-            setCurrentGrind: (grind: Grind | null) => set({ currentGrind: grind }),
+            grinds: {},
+            setGrinds: (grinds: { [key: string]: Grind }) => set({ grinds }),
+            addGrind: (grind: Grind) =>
+                set((state) => ({
+                    grinds: {
+                        ...state.grinds,
+                        [grind.id]: grind,
+                    },
+                })),
         }),
         {
             name: "grind-storage", // unique name for localStorage key

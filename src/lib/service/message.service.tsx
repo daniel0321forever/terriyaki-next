@@ -35,7 +35,35 @@ export async function getMessages(offset: number = 0, limit: number = 10) {
     }
 }
 
-export async function readMessage(messageId: number) {
+export async function getSentMessages(offset: number = 0, limit: number = 10, includeResponse: boolean = false) {
+    const res = await fetch(`${API_BASE}/api/v1/messages/sent?offset=${offset}&limit=${limit}`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${Cookies.get("token")}`,
+        },
+    });
+
+    switch (res.status) {
+        case 200:
+            const data = await res.json();
+            if (isDev) {
+                console.log("status: ", res.status, "data: ", data);
+            }
+            const messages: Message[] = data.data;
+
+            if (!includeResponse) {
+                return messages.filter((message: Message) => message.type !== 'invitation_accepted' && message.type !== 'invitation_rejected');
+            }
+            return messages;
+        case 401:
+            throw new Error(ERROR_CODE_UNAUTHORIZED);
+        default:
+            throw new Error(ERROR_CODE_UNKNOWN);
+    }
+}   
+
+export async function readMessage(messageId: string) {
     const res = await fetch(`${API_BASE}/api/v1/messages/${messageId}/read`, {
         method: "POST",
         headers: {
@@ -89,7 +117,7 @@ export async function createInvitationMessage(grindID: string, participantEmail:
     }
 }
 
-export async function acceptInvitationMessage(messageId: number) {
+export async function acceptInvitationMessage(messageId: string) {
     const res = await fetch(`${API_BASE}/api/v1/messages/${messageId}/invitation/accept`, {
         method: "POST",
         headers: {
@@ -117,7 +145,7 @@ export async function acceptInvitationMessage(messageId: number) {
     }
 }
 
-export async function rejectInvitationMessage(messageId: number) {
+export async function rejectInvitationMessage(messageId: string) {
     const res = await fetch(`${API_BASE}/api/v1/messages/${messageId}/invitation/reject`, {
         method: "POST",
         headers: {

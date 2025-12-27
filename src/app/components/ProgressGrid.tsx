@@ -14,7 +14,7 @@ export default function ProgressGrid({ progress, onProgressClick }: ProgressGrid
         return '#C6F27A'; // Light green
       case 'missed':
         return '#F2B07A'; // Orange
-      case 'upcoming':
+      case 'pending':
         return '#DDDDDD'; // Light gray
       default:
         return '#d1d5db';
@@ -34,7 +34,7 @@ export default function ProgressGrid({ progress, onProgressClick }: ProgressGrid
     const statusMap = {
       completed: 'Completed',
       missed: 'Missed',
-      upcoming: 'Upcoming'
+      pending: 'Pending'
     };
     return statusMap[status] || status.charAt(0).toUpperCase() + status.slice(1);
   };
@@ -45,7 +45,7 @@ export default function ProgressGrid({ progress, onProgressClick }: ProgressGrid
         return '#84cc16'; // lime-500
       case 'missed':
         return '#f97316'; // orange-500
-      case 'upcoming':
+      case 'pending':
         return '#6b7280'; // gray-500
       default:
         return '#6b7280';

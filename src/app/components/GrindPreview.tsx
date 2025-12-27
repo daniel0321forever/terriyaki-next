@@ -37,18 +37,13 @@ export default function GrindPreview({
       transition={{ duration: 0.3, delay: 0.3 }}
       style={{ width: '100%' }}
     >
-      <Card
+      <Box
         sx={{
           width: '100%',
-          boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
-          border: '1px solid',
-          borderColor: 'rgba(255, 255, 255, 0.5)',
-          backgroundColor: 'rgba(255, 255, 255, 0.8)',
-          backdropFilter: 'blur(10px)',
           mb: 3,
         }}
       >
-        <CardContent sx={{ p: { xs: 2.5, sm: 3, md: 3.5 } }}>
+        <Box sx={{ p: { xs: 2.5, sm: 3, md: 3.5 } }}>
           {grind ? (
             <>
               {/* Current User Info */}
@@ -130,27 +125,13 @@ export default function GrindPreview({
                 px: 4,
               }}
             >
-              <Box
-                sx={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  width: 80,
-                  height: 80,
-                  borderRadius: '50%',
-                  backgroundColor: 'rgba(255, 193, 94, 0.2)',
-                  mb: 3,
-                }}
-              >
-                <Target size={40} color="rgba(79, 79, 79, 0.6)" />
-              </Box>
               <Typography
                 variant="h6"
                 sx={{
-                  fontSize: '1.5rem',
-                  fontWeight: 600,
+                  fontSize: '1.2rem',
+                  fontWeight: 500,
                   color: 'text.primary',
-                  mb: 1.5,
+                  mb: 1,
                 }}
               >
                 No Active Grind
@@ -167,13 +148,12 @@ export default function GrindPreview({
                   lineHeight: 1.6,
                 }}
               >
-                Start a new coding challenge and track your daily progress. 
-                Join the community and stay accountable to your goals.
+                Ready to start your next challenge? Create a new grind and begin tracking your daily progress.
               </Typography>
             </Box>
           )}
-        </CardContent>
-      </Card>
+        </Box>
+      </Box>
 
       {/* Action Buttons */}
       <Box

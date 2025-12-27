@@ -97,42 +97,6 @@ export default function LeetCodeTaskCard({ task }: { task: Task }) {
           {task.title}
         </a>
       </Box>
-
-      {/* Tags */}
-      {task.topicTags && task.topicTags.length > 0 && (
-        <Box sx={{
-          display: 'flex',
-          flexWrap: 'wrap',
-          gap: 1,
-          justifyContent: 'center',
-          mb: 3,
-          px: 2,
-          maxWidth: '800px'
-        }}>
-          {task.topicTags.map((tag, index) => (
-            <Chip
-              key={index}
-              label={tag}
-              sx={{
-                bgcolor: 'rgba(255, 193, 94, 0.15)',
-                color: 'rgb(59, 37, 0)',
-                border: '1px solid rgba(255, 193, 94, 0.3)',
-                fontWeight: 500,
-                fontSize: '0.85rem',
-                height: '28px',
-                '& .MuiChip-label': {
-                  px: 1.5,
-                },
-                '&:hover': {
-                  bgcolor: 'rgba(255, 193, 94, 0.25)',
-                  borderColor: 'rgba(255, 193, 94, 0.5)',
-                }
-              }}
-            />
-          ))}
-        </Box>
-      )}
-
       {/* LeetCode Problem Description */}
       <Typography variant="body1" sx={{ fontSize: '1.1rem', color: 'rgb(116, 116, 116)', mb: 4, px: 6 }}>
         To complete today&apos;s LeetCode task, please copy and paste your solution code from your code editor or the LeetCode website into the dialog by clicking the button below.
@@ -143,7 +107,7 @@ export default function LeetCodeTaskCard({ task }: { task: Task }) {
         <Box
           onClick={handleStartInterview}
           sx={{
-            bgcolor: 'rgb(79, 79, 79)',
+            bgcolor: 'rgb(238, 162, 49)',
             color: 'white',
             fontSize: '1.2rem',
             fontWeight: 600,
@@ -153,7 +117,7 @@ export default function LeetCodeTaskCard({ task }: { task: Task }) {
             textTransform: 'none',
             transition: 'background-color 0.5s, transform 0.25s cubic-bezier(0.4,0,0.2,1)',
             '&:hover': {
-              bgcolor: 'rgb(60, 60, 60)',
+              bgcolor: 'rgb(238, 131, 49)',
               transform: 'scale(1.05)',
             },
             cursor: 'pointer',

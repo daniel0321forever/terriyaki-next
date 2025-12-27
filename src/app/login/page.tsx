@@ -1,9 +1,9 @@
 'use client';
 
-import { Box, Typography, TextField, Button, Link } from '@mui/material';
+import { Box, Typography, TextField, Button, Link, Alert, Collapse, IconButton } from '@mui/material';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { LogIn } from 'lucide-react';
+import { LogIn, X } from 'lucide-react';
 
 import { login } from '@/lib/service/auth.service';
 import { useUserStore } from '@/lib/stores/auth.store';
@@ -15,27 +15,42 @@ import { UserStoreState } from '@/lib/stores/auth.store';
 export default function LoginPage() {
   const router = useRouter();
   const setUser = useUserStore((state: UserStoreState) => state.setUser);
-  const setGrind = useGrindStore((state) => state.setCurrentGrind);
+  const setGrinds = useGrindStore((state) => state.setGrinds);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState<string | null>(null);
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null); // Clear any previous errors
 
-    login(email, password).then(({ user, currentGrind }) => {
+    login(email, password).then(({ user, grinds }) => {
       setUser(user);
-      setGrind(currentGrind);
+      setGrinds(grinds);
       router.push('/');
     }).catch((error) => {
       switch (error.message) {
         case ERROR_CODE_INVALID_EMAIL:
-          alert("Invalid email");
+          setError("The email address you entered is not valid. Please check and try again.");
           break;
         case ERROR_CODE_INVALID_PASSWORD:
-          alert("Invalid password");
+          setError("The password you entered is incorrect. Please try again.");
+          break;
+        default:
+          setError("Something went wrong. Please try again later.");
           break;
       }
     });
+  };
+
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEmail(e.target.value);
+    if (error) setError(null); // Clear error when user starts typing
+  };
+
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPassword(e.target.value);
+    if (error) setError(null); // Clear error when user starts typing
   };
 
   return (
@@ -43,7 +58,6 @@ export default function LoginPage() {
       sx={{
         minHeight: '100vh',
         display: 'flex',
-        backgroundColor: '#f5e6d3',
         alignItems: 'center',
         justifyContent: 'center',
         px: { xs: 3, sm: 4 },
@@ -116,29 +130,58 @@ export default function LoginPage() {
             gap: 3,
           }}
         >
+          {/* Error Alert */}
+          <Collapse in={!!error}>
+            <Alert
+              severity="error"
+              action={
+                <IconButton
+                  aria-label="close"
+                  color="inherit"
+                  size="small"
+                  onClick={() => setError(null)}
+                >
+                  <X size={16} />
+                </IconButton>
+              }
+              sx={{
+                borderRadius: '12px',
+                '& .MuiAlert-icon': {
+                  color: 'error.main',
+                },
+                '& .MuiAlert-message': {
+                  fontSize: '0.95rem',
+                },
+              }}
+            >
+              {error}
+            </Alert>
+          </Collapse>
+
           <TextField
             label="Email"
             type="email"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={handleEmailChange}
             required
             fullWidth
+            error={!!error && error.includes('email')}
             sx={{
               '& .MuiOutlinedInput-root': {
                 backgroundColor: 'white',
                 borderRadius: '12px',
                 '& fieldset': {
-                  borderColor: '#e0e0e0',
+                  borderColor: error && error.includes('email') ? 'error.main' : '#e0e0e0',
                 },
                 '&:hover fieldset': {
-                  borderColor: '#FFC15E',
+                  borderColor: error && error.includes('email') ? 'error.main' : '#FFC15E',
                 },
                 '&.Mui-focused fieldset': {
-                  borderColor: '#FFC15E',
+                  borderColor: error && error.includes('email') ? 'error.main' : '#FFC15E',
                 },
               },
               '& .MuiInputLabel-root.Mui-focused': {
-                color: '#FFC15E',
+                color: error && error.includes('email') ? 'error.main' : '#FFC15E',
               },
             }}
           />
@@ -147,25 +190,26 @@ export default function LoginPage() {
             label="Password"
             type="password"
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={handlePasswordChange}
             required
             fullWidth
+            error={!!error && error.includes('password')}
             sx={{
               '& .MuiOutlinedInput-root': {
                 backgroundColor: 'white',
                 borderRadius: '12px',
                 '& fieldset': {
-                  borderColor: '#e0e0e0',
+                  borderColor: error && error.includes('password') ? 'error.main' : '#e0e0e0',
                 },
                 '&:hover fieldset': {
-                  borderColor: '#FFC15E',
+                  borderColor: error && error.includes('password') ? 'error.main' : '#FFC15E',
                 },
                 '&.Mui-focused fieldset': {
-                  borderColor: '#FFC15E',
+                  borderColor: error && error.includes('password') ? 'error.main' : '#FFC15E',
                 },
               },
               '& .MuiInputLabel-root.Mui-focused': {
-                color: '#FFC15E',
+                color: error && error.includes('password') ? 'error.main' : '#FFC15E',
               },
             }}
           />

@@ -15,21 +15,21 @@ export default function AuthenticatedPageWrapper() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
 
   const setUser = useUserStore((state: UserStoreState) => state.setUser);
-  const setGrind = useGrindStore((state) => state.setCurrentGrind);
+  const setGrinds = useGrindStore((state) => state.setGrinds);
   const user: User | null = useUserStore((state: UserStoreState) => state.user);  
   
   useEffect(() => {
     const performAuthCheck = async () => {
       try {
-        const { user, currentGrind } = await verifyToken();
+        const { user, grinds } = await verifyToken();
         setUser(user);
-        setGrind(currentGrind);
+        setGrinds(grinds);
 
-        console.log("Authentication check successful:", user, currentGrind);
+        console.log("Authentication check successful");
         setIsAuthenticated(true);
 
       } catch (error) {
-        console.log("Authentication check failed:", error);
+        console.warn("Authentication check failed:", error);
         setIsAuthenticated(false);
       }
     };
