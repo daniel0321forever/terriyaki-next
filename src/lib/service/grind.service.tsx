@@ -1,5 +1,5 @@
 import Cookies from "js-cookie";
-import { Grind } from "@/types/grind.types";
+import { Grind, ProgressRecord } from "@/types/grind.types";
 import { ERROR_CODE_UNAUTHORIZED, ERROR_CODE_UNKNOWN } from "@/config/error_code";
 import { API_BASE, isDev } from "@/config/config";
 
@@ -166,6 +166,38 @@ export async function quitGrind(grindId: string) {
                 console.log("status: ", res.status, "data: ", data);
             }
             return data;
+        case 401:
+            if (isDev) {
+                const data = await res.json();
+                console.error("status: ", res.status, "error: ", data);
+            }
+            throw new Error(ERROR_CODE_UNAUTHORIZED);
+        default:
+            if (isDev) {
+                const data = await res.json();
+                console.error("status: ", res.status, "error: ", data);
+            }
+            throw new Error(ERROR_CODE_UNKNOWN);
+    }
+}
+
+export async function getProgressRecordsForParticipant(grindId: string, participantId: string) {
+    const res = await fetch(`${API_BASE}/api/v1/grinds/${grindId}/progress?participantId=${participantId}`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${Cookies.get("token")}`,
+        },
+    });
+
+    switch (res.status) {
+        case 200:
+            const data = await res.json();
+            if (isDev) {
+                console.log("status: ", res.status, "data: ", data);
+            }
+            const progressRecords: ProgressRecord[] = data.progressRecords;
+            return progressRecords;
         case 401:
             if (isDev) {
                 const data = await res.json();

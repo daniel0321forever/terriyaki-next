@@ -5,7 +5,7 @@ import ProgressGrid from '@/app/components/ProgressGrid';
 import CustomAppBar from '@/app/components/CustomAppBar';
 import BackButton from '@/app/components/BackButton';
 import UserAvatarSelector from '@/app/grind/[id]/progress/components/UserAvatarSelector';
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useGrindStore } from '@/lib/stores/grind.store';
 import { Grind, Participant, ProgressRecord } from '@/types/grind.types';
 import { useUserStore } from '@/lib/stores/auth.store';
@@ -15,13 +15,16 @@ import Editor from '@monaco-editor/react';
 import { User } from '@/types/user.types';
 import { UserStoreState } from '@/lib/stores/auth.store';
 import { useParams } from 'next/navigation';
+import { getProgressRecordsForParticipant } from '@/lib/service/grind.service';
 
 export default function GrindProgress() {
   const params = useParams();
   const id = params?.id as string;
   const grind: Grind | null = useGrindStore((state) => state.grinds[id]);
-  const [selectedUserId, setSelectedUserId] = useState<string>('current');
   const currentUser: User | null = useUserStore((state: UserStoreState) => state.user);
+
+  const [selectedUserId, setSelectedUserId] = useState<string>(currentUser?.id?.toString() || '');
+  const [selectedUserProgress, setSelectedUserProgress] = useState<ProgressRecord[] | null>(grind.progress);
   
   // Task detail state
   const [selectedProgressRecord, setSelectedProgressRecord] = useState<ProgressRecord | null>(null);
@@ -29,8 +32,12 @@ export default function GrindProgress() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   
+  // Progress records loading state
+  const [loadingProgress, setLoadingProgress] = useState(false);
+  
   // Cache for task details - using useRef to persist across re-renders
   const taskCacheRef = useRef<Map<string, Task>>(new Map());
+  const progressCacheRef = useRef<Map<string, ProgressRecord[]>>(new Map());
 
   if (!grind) {
     return (
@@ -41,16 +48,17 @@ export default function GrindProgress() {
     );
   }
 
-  const allUsers = [
-    ...grind.participants.map((p: Participant) => ({
-      id: p.id.toString(),
-      username: currentUser?.id === p.id ? 'You' : p.username,
-      avatar: p.avatar,
-      missedDays: p.missedDays,
-      totalPenalty: p.totalPenalty,
-      progress: grind.progress,
-    }))
+  const sortedParticipants = [
+    ...grind.participants.filter((p: Participant) => p.id === currentUser?.id),
+    ...grind.participants.filter((p: Participant) => p.id !== currentUser?.id),
   ];
+  const allUsers = sortedParticipants.map((p: Participant) => ({
+    id: p.id.toString(),
+    username: currentUser?.id === p.id ? 'You' : p.username,
+    avatar: p.avatar,
+    missedDays: p.missedDays,
+    totalPenalty: p.totalPenalty,
+  }));
 
   const selectedUser = allUsers.find(u => u.id === selectedUserId) || allUsers[0];
 
@@ -70,6 +78,34 @@ export default function GrindProgress() {
       pending: 'Pending'
     };
     return statusMap[status] || status.charAt(0).toUpperCase() + status.slice(1);
+  };
+
+  useEffect(() => {
+    
+  }, [selectedUserProgress]);
+
+  const handleSelectUser = async (userId: string) => {
+    setLoadingProgress(true);
+    setSelectedUserId(userId);
+    setSelectedProgressRecord(null);
+    setTaskDetail(null);
+    setError(null);
+    
+    try {
+      const cachedProgress = progressCacheRef.current.get(userId);
+      if (cachedProgress) {
+        setSelectedUserProgress(cachedProgress);
+        setLoadingProgress(false);
+        return;
+      }
+      const progressRecords = await getProgressRecordsForParticipant(id, userId);
+      progressCacheRef.current.set(userId, progressRecords);
+      setSelectedUserProgress(progressRecords);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to fetch progress records');
+    } finally {
+      setLoadingProgress(false);
+    }
   };
 
   const handleProgressClick = async (progressRecord: ProgressRecord) => {
@@ -107,7 +143,7 @@ export default function GrindProgress() {
         <UserAvatarSelector
           users={allUsers}
           selectedUserId={selectedUserId}
-          onSelect={setSelectedUserId}
+          onSelect={handleSelectUser}
         />
 
         {/* Right Content - Selected User's Progress */}
@@ -163,7 +199,25 @@ export default function GrindProgress() {
                   Progress
                 </Typography>
                 <Box sx={{ maxWidth: '500px' }}>
-                  <ProgressGrid progress={selectedUser.progress} onProgressClick={handleProgressClick} />
+                  {loadingProgress ? (
+                    <Box 
+                      sx={{ 
+                        display: 'flex', 
+                        flexDirection: 'column',
+                        justifyContent: 'center', 
+                        alignItems: 'center', 
+                        py: 8,
+                        gap: 2
+                      }}
+                    >
+                      <CircularProgress size={48} />
+                      <Typography variant="body2" sx={{ color: 'text.secondary', fontSize: '0.9rem' }}>
+                        Loading progress records...
+                      </Typography>
+                    </Box>
+                  ) : (
+                    <ProgressGrid progress={selectedUserProgress || []} onProgressClick={handleProgressClick} />
+                  )}
                 </Box>
               </Box>
             </CardContent>
