@@ -96,7 +96,7 @@ const InviteDialog: React.FC<InviteDialogProps> = ({
       // Create invitation message
       await createInvitationMessage(grindID, trimmedEmail);
       handleClose();
-    } catch (error) {
+    } catch {
       setError('An error occurred while checking the email. Please try again.');
       setLoading(false);
     }

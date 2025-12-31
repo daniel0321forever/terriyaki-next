@@ -8,8 +8,6 @@ import InviteDialog from '@/app/components/InviteDialog';
 import { useState } from 'react';
 import { useGrindStore } from '@/lib/stores/grind.store';
 import { Grind, Participant } from '@/types/grind.types';
-import { User } from '@/types/user.types';
-import { useUserStore } from '@/lib/stores/auth.store';
 import { useParams } from 'next/navigation';
 
 import { ArrowRight } from 'lucide-react';
@@ -55,7 +53,6 @@ export default function GrindSettings() {
   const params = useParams();
   const id = params?.id as string;
   const grind: Grind | null = useGrindStore((state) => state.grinds[id]);
-  const [autoRenew, setAutoRenew] = useState(false);
   const [inviteDialogOpen, setInviteDialogOpen] = useState(false);
   
   if (!grind) {

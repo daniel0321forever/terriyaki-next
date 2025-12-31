@@ -4,11 +4,10 @@ import { useState, useEffect } from 'react';
 import { Box, Typography, Chip, CircularProgress } from '@mui/material';
 import { motion } from 'framer-motion';
 import { useUserStore } from '@/lib/stores/auth.store';
-import { getGrinds } from '@/lib/service/grind.service';
 import { Grind, Participant, ProgressRecord } from '@/types/grind.types';
 import { UserStoreState } from '@/lib/stores/auth.store';
 import { User } from '@/types/user.types';
-import { CheckCircle, XCircle, DollarSign, Target, AlertCircle } from 'lucide-react';
+import { CheckCircle, XCircle, DollarSign, AlertCircle } from 'lucide-react';
 import { useGrindStore } from '@/lib/stores/grind.store';
 
 
@@ -337,7 +336,7 @@ export default function MyRecordsView() {
             No Records Found
           </Typography>
           <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-            You haven't participated in any grinds yet.
+            You haven&apos;t participated in any grinds yet.
           </Typography>
         </Box>
       ) : (

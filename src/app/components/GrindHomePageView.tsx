@@ -1,13 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-import { useGrindStore } from '@/lib/stores/grind.store';
 
 import { Box, Typography, List, ListItem, ListItemButton, ListItemText } from '@mui/material';
 import { motion } from 'framer-motion';
 import { Target, PlusCircle, Mail, Award, Briefcase } from 'lucide-react';
 import CustomAppBar from '@/app/components/CustomAppBar';
-import { Grind } from '@/types/grind.types';
 
 import CurrentGrindsView from './CurrentGrindsView';
 import CreateNewGrindView from './CreateNewGrindView';

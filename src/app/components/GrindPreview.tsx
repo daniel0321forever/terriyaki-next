@@ -1,8 +1,8 @@
 'use client';
 
-import { Box, Typography, Avatar, Divider, Card, CardContent, Button } from '@mui/material';
+import { Box, Typography, Avatar, Divider, Button } from '@mui/material';
 import { motion } from 'framer-motion';
-import { Target, PlusCircle, LogOut } from 'lucide-react';
+import { PlusCircle, LogOut } from 'lucide-react';
 import { Grind, Participant } from '@/types/grind.types';
 import { User } from '@/types/user.types';
 import ProgressGrid from './ProgressGrid';

@@ -3,7 +3,6 @@
 import { useUserStore } from '@/lib/stores/auth.store';
 import { useGrindStore } from '@/lib/stores/grind.store';
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
 import { useParams } from 'next/navigation';
 
 
@@ -17,9 +16,7 @@ import { Participant } from '@/types/grind.types';
 import LeetCodeTaskCard from '@/app/grind/[id]/components/LeetCodeTaskCard';
 import CustomAppBar from '@/app/components/CustomAppBar';
 import ProgressGrid from '@/app/components/ProgressGrid';
-import UserCard from '@/app/components/UserCard';
 import { User } from '@/types/user.types';
-import { getCurrentGrind } from '@/lib/service/grind.service';
 import { UserStoreState } from '@/lib/stores/auth.store';
 
 

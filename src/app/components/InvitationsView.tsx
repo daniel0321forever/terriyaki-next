@@ -4,10 +4,7 @@ import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import {
   Box,
   Typography,
-  Card,
-  CardContent,
   Avatar,
-  Chip,
   CircularProgress,
   Button,
   Divider,
@@ -140,15 +137,6 @@ export default function InvitationsView() {
       default:
         return 'default';
     }
-  };
-
-  const formatStartDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    });
   };
 
   const isResponded = (message: Message) => {

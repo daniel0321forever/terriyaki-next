@@ -2,7 +2,7 @@
 
 import { Typography, Box } from '@mui/material';
 import { motion } from 'framer-motion';
-import { Brain, CheckCircle2, Users, Sparkles } from 'lucide-react'; // Import necessary icons
+import { Brain, Users, Sparkles } from 'lucide-react'; // Import necessary icons
 
 export default function AnimatedIntro() {
   // Define the intro items, each with an icon and label
@@ -62,7 +62,7 @@ export default function AnimatedIntro() {
           letterSpacing: '-0.01em',
         }}
       >
-        Let's do LeetCode together
+        Let&apos;s do LeetCode together
       </Typography>
 
       {/* Introduction, now with icons for each item */}

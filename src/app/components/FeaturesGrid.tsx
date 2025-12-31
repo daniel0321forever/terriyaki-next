@@ -57,7 +57,6 @@ export default function FeaturesGrid() {
         }}
       >
         {features.map((feature, index) => {
-          const IconComponent = feature.icon;
           const isLast = index === features.length - 1;
           return (
             <motion.div

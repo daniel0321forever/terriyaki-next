@@ -19,7 +19,6 @@ import { logout } from '@/lib/service/auth.service';
 import { UserStoreState, useUserStore } from '@/lib/stores/auth.store';
 import { useGrindStore } from '@/lib/stores/grind.store';
 import MessageIcon from './MessageIcon';
-import { Grind } from '@/types/grind.types';
 import { User } from '@/types/user.types';
 
 interface AppBarProps {

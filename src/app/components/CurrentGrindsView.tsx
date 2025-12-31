@@ -1,20 +1,16 @@
 'use client';
 
-import { useUserStore } from '@/lib/stores/auth.store';
 import { useGrindStore } from '@/lib/stores/grind.store';
 
-import { Box, Typography, Card, CardContent, Chip } from '@mui/material';
+import { Box, Typography, Chip } from '@mui/material';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { Grind, Participant, ProgressRecord } from '@/types/grind.types';
-import { User } from '@/types/user.types';
-import { UserStoreState } from '@/lib/stores/auth.store';
-import { CheckCircle, XCircle, Clock, Plus, LogOut } from 'lucide-react';
+import { Grind, ProgressRecord } from '@/types/grind.types';
+import { CheckCircle, XCircle, Clock, Plus } from 'lucide-react';
 
 export default function CurrentGrindsView({ handleCreate }: { handleCreate: () => void }) {
   const router = useRouter();
   const grindsMap = useGrindStore((state) => state.grinds);
-  const user: User | null = useUserStore((state: UserStoreState) => state.user);
 
   // Convert Map to array of grinds
   const grinds = Array.from(Object.values(grindsMap));
@@ -214,7 +210,7 @@ export default function CurrentGrindsView({ handleCreate }: { handleCreate: () =
                       fontWeight: 600,
                     }}
                   >
-                    Today's Task
+                    Today&apos;s Task
                   </Typography>
                   <Typography
                     variant="body1"

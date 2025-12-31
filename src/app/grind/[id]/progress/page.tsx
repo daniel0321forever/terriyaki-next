@@ -5,7 +5,7 @@ import ProgressGrid from '@/app/components/ProgressGrid';
 import CustomAppBar from '@/app/components/CustomAppBar';
 import BackButton from '@/app/components/BackButton';
 import UserAvatarSelector from '@/app/grind/[id]/progress/components/UserAvatarSelector';
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import { useGrindStore } from '@/lib/stores/grind.store';
 import { Grind, Participant, ProgressRecord } from '@/types/grind.types';
 import { useUserStore } from '@/lib/stores/auth.store';
@@ -79,10 +79,6 @@ export default function GrindProgress() {
     };
     return statusMap[status] || status.charAt(0).toUpperCase() + status.slice(1);
   };
-
-  useEffect(() => {
-    
-  }, [selectedUserProgress]);
 
   const handleSelectUser = async (userId: string) => {
     setLoadingProgress(true);
