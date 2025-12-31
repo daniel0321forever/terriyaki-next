@@ -166,26 +166,41 @@ const GrindInvitationMessageDialog: React.FC<GrindInvitationMessageDialogProps> 
       }}
     >
       <DialogTitle>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <Avatar
-            src={message.sender.avatar}
-            alt={message.sender.username}
-            sx={{ width: 48, height: 48 }}
-          />
-          <Box sx={{ flex: 1 }}>
-            <Typography variant="h6" sx={{ fontWeight: 600 }}>
-              {message.sender.username}
-            </Typography>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 0.5 }}>
-              <Chip
-                label={message.type.replace('_', ' ')}
-                size="small"
-                color={getMessageTypeColor(message.type)}
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Avatar
+                src={message.sender.avatar}
+                alt={message.sender.username}
+                sx={{ width: 24, height: 24 }}
               />
-              <Typography variant="caption" color="text.secondary">
-                {formatDate(message.createdAt)}
+              <Typography variant="body1" sx={{ fontWeight: 600 }}>
+                {message.sender.username}
               </Typography>
             </Box>
+            <Typography variant="body1" color="text.secondary">
+              to
+            </Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Avatar
+                src={message.receiver.avatar}
+                alt={message.receiver.username}
+                sx={{ width: 24, height: 24 }}
+              />
+              <Typography variant="body1" sx={{ fontWeight: 600 }}>
+                {message.receiver.username}
+              </Typography>
+            </Box>
+          </Box>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <Chip
+              label={message.type.replace('_', ' ')}
+              size="small"
+              color={getMessageTypeColor(message.type)}
+            />
+            <Typography variant="caption" color="text.secondary">
+              {formatDate(message.createdAt)}
+            </Typography>
           </Box>
         </Box>
       </DialogTitle>

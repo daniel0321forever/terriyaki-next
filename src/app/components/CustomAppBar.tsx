@@ -8,6 +8,7 @@ import {
   Typography,
   Menu,
   MenuItem,
+  Avatar,
 } from '@mui/material';
 import {
   Home as HomeIcon,
@@ -15,9 +16,10 @@ import {
 } from '@mui/icons-material';
 import { useRouter } from 'next/navigation';
 import { logout } from '@/lib/service/auth.service';
-import { useUserStore } from '@/lib/stores/auth.store';
+import { UserStoreState, useUserStore } from '@/lib/stores/auth.store';
 import { useGrindStore } from '@/lib/stores/grind.store';
 import MessageIcon from './MessageIcon';
+import { User } from '@/types/user.types';
 
 interface AppBarProps {
   title?: string;
@@ -29,7 +31,9 @@ const CustomAppBar: React.FC<AppBarProps> = ({ onHomeClick }) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const setUser = useUserStore((state) => state.setUser);
-  const setGrind = useGrindStore((state) => state.setCurrentGrind);
+  const setGrinds = useGrindStore((state) => state.setGrinds);
+
+  const currentUser: User | null = useUserStore((state: UserStoreState) => state.user);
 
   const handleHomeClick = () => {
     if (onHomeClick) {
@@ -49,7 +53,7 @@ const CustomAppBar: React.FC<AppBarProps> = ({ onHomeClick }) => {
 
   const handleProfileClick = () => {
     handleMenuClose();
-    router.push('/');
+    router.push('/profile');
   };
 
   const handleLogoutClick = async () => {
@@ -57,13 +61,13 @@ const CustomAppBar: React.FC<AppBarProps> = ({ onHomeClick }) => {
     try {
       await logout();
       setUser(null);
-      setGrind(null);
+      setGrinds({});
       router.push('/login');
     } catch (error) {
       console.error('Logout failed:', error);
       // Even if logout fails, clear local state and redirect
       setUser(null);
-      setGrind(null);
+      setGrinds({});
       router.push('/login');
     }
   };
@@ -73,7 +77,7 @@ const CustomAppBar: React.FC<AppBarProps> = ({ onHomeClick }) => {
       position="fixed" 
       elevation={0}
       sx={{
-        backgroundColor: 'transparent',
+        backgroundColor: 'white',
         color: 'text.primary',
         boxShadow: 'none',
         zIndex: 1000,
@@ -91,6 +95,9 @@ const CustomAppBar: React.FC<AppBarProps> = ({ onHomeClick }) => {
             '&:hover': {
               color: 'grey.500',
             },
+            display: 'flex',
+            alignItems: 'center',
+            gap: 1,
             transition: 'all 0.2s ease-in-out',
             '& svg': {
               fontSize: '2.2rem',
@@ -98,6 +105,7 @@ const CustomAppBar: React.FC<AppBarProps> = ({ onHomeClick }) => {
           }}
         >
           <HomeIcon />
+          <Typography variant="h6" sx={{ fontWeight: 600, fontSize: '1.3rem' }}>TERRIYAKI</Typography>
         </Box>
 
         {/* Right side - Message and Account buttons */}
@@ -119,12 +127,24 @@ const CustomAppBar: React.FC<AppBarProps> = ({ onHomeClick }) => {
                 color: 'grey.500',
               },
               transition: 'all 0.2s ease-in-out',
-              '& svg': {
+              '& svg, & .MuiAvatar-root': {
                 fontSize: '2.5rem',
+                width: '2.5rem',
+                height: '2.5rem',
               },
+              display: 'flex',
+              alignItems: 'center',
             }}
           >
-            <AccountCircleIcon />
+            {currentUser && currentUser.avatar && currentUser.avatar !== 'none' && currentUser.avatar.trim() !== '' ? (
+              <Avatar
+                alt={currentUser.username}
+                src={currentUser.avatar}
+                sx={{ width: '2.5rem', height: '2.5rem', bgcolor: 'grey.200', fontSize: '1.3rem' }}
+              />
+            ) : (
+              <AccountCircleIcon />
+            )}
           </Box>
         </Box>
 
@@ -141,6 +161,7 @@ const CustomAppBar: React.FC<AppBarProps> = ({ onHomeClick }) => {
               overflow: 'visible',
               filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
               mt: 1.5,
+              alignItems: 'center',
               '& .MuiAvatar-root': {
                 width: 32,
                 height: 32,

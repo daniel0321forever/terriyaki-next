@@ -28,6 +28,7 @@ import { getAgentToken, endInterview, AgentTokenResponse, saveAgentResponse } fr
 import { getTaskDetail, submitTask } from '@/lib/service/task.serivice';
 import { Task } from '@/types/task.types';
 import CustomAppBar from '@/app/components/CustomAppBar';
+import { InterviewEvaluation, InterviewMessage } from '@/types/interview.types';
 
 interface ConversationMessage {
   role: 'user' | 'agent';
@@ -65,8 +66,8 @@ export default function InterviewPage() {
   const [error, setError] = useState<string | null>(null);
   const [conversation, setConversation] = useState<ConversationMessage[]>([]);
   const [interviewResults, setInterviewResults] = useState<{
-    transcript: any[];
-    evaluation: any;
+    transcript: string[];
+    evaluation: InterviewEvaluation;
   } | null>(null);
   const [isEndingInterview, setIsEndingInterview] = useState(false);
   const [showResults, setShowResults] = useState(false);
@@ -154,40 +155,14 @@ Can you start by explaining your thinking process and approach to solving this p
     endSession,
     status,
     isSpeaking,
-    sendUserMessage,
     sendContextualUpdate,
   } = useConversation({
     overrides: agentOverrides,
     // Callbacks
-    onMessage: (message) => {
+    onMessage: (message: InterviewMessage) => {
       // Extract message text properly
-      let messageText = '';
-      let messageRole: 'user' | 'agent' = 'agent';
-
-      if (typeof message === 'string') {
-          messageText = message;
-      } else if (message && typeof message === 'object') {
-          // Try different possible properties
-          messageText = (message as any).text
-          || (message as any).content
-          || (message as any).message
-          || (message as any).transcript
-          || '';
-
-          // If still empty, try to extract from nested objects
-          if (!messageText && (message as any).data) {
-          messageText = (message as any).data.text || (message as any).data.content || '';
-          }
-
-          // If still empty, log the full object for debugging
-          if (!messageText) {
-          console.warn('Could not extract text from message:', message);
-          messageText = JSON.stringify(message); // Fallback
-          }
-
-          messageRole = (message as any).role ||
-          ((message as any).type === 'user_transcript' ? 'user' : 'agent');
-      }
+      const messageText = message.message;
+      const messageRole: 'user' | 'agent' = message.role as 'user' | 'agent';
 
       // Add to conversation state
       const newMessage = {
@@ -244,9 +219,9 @@ Can you start by explaining your thinking process and approach to solving this p
         setAgentConfig(config);
 
         setIsLoading(false);
-      } catch (err: any) {
+      } catch (err) {
         console.error('Failed to initialize interview:', err);
-        setError(err.message || 'Failed to initialize interview');
+        setError('Failed to initialize interview');
         setIsLoading(false);
       }
     }
@@ -278,9 +253,9 @@ Can you start by explaining your thinking process and approach to solving this p
       });
 
       console.log('Interview started:', conversationId);
-    } catch (err: any) {
+    } catch (err) {
       console.error('Failed to start interview:', err);
-      setError(`Failed to connect: ${err.message}`);
+      setError('Failed to connect');
     }
   };
 
@@ -306,7 +281,7 @@ Can you start by explaining your thinking process and approach to solving this p
       console.log('Interview ended with results:', result);
 
       // 3. Parse transcript
-      let transcript: any[] = [];
+      let transcript: string[] = [];
       if (result.transcript) {
         try {
           transcript = Array.isArray(result.transcript)
@@ -325,9 +300,9 @@ Can you start by explaining your thinking process and approach to solving this p
       });
       setShowResults(true);
       // Note: We don't update conversation state here since real-time transcript is already displayed
-    } catch (err: any) {
+    } catch (err) {
       console.error('Error ending interview:', err);
-      setError(`Failed to end interview: ${err.message}`);
+      setError('Failed to end interview');
     } finally {
       setIsEndingInterview(false);
     }
@@ -351,9 +326,9 @@ ${code}
 You can now ask them to explain their implementation, discuss time/space complexity, edge cases, or review their approach. Reference specific parts of their code in your questions.`
         );
       }
-    } catch (err: any) {
+    } catch (err) {
       console.error('Code submit error:', err);
-      setError(err.message || 'Failed to submit code');
+      setError('Failed to submit code');
     } finally {
       setIsSubmittingCode(false);
     }
@@ -816,7 +791,7 @@ You can now ask them to explain their implementation, discuss time/space complex
           )}
           {!codeSubmitted && (
             <Typography variant="body2" sx={{ mb: 2, fontStyle: 'italic' }}>
-              Don't forget to submit your code above to complete your check-in!
+              Don&apos;t forget to submit your code above to complete your check-in!
             </Typography>
           )}
 

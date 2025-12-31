@@ -1,5 +1,6 @@
 import Cookies from "js-cookie";
 import { API_BASE, isDev } from "@/config/config";
+import { InterviewEvaluation } from "@/types/interview.types";
 
 export interface AgentTokenResponse {
   token: string;
@@ -60,7 +61,10 @@ export async function getAgentToken(taskId: string): Promise<AgentTokenResponse>
 /**
  * End interview session
  */
-export async function endInterview(sessionId: string): Promise<any> {
+export async function endInterview(sessionId: string): Promise<{
+  transcript: string[],
+  evaluation: InterviewEvaluation,
+}> {
   const res = await fetch(`${API_BASE}/api/v1/interviews/${sessionId}/end`, {
     method: "POST",
     headers: {
@@ -95,7 +99,7 @@ export async function submitCodeDuringInterview(
   sessionId: string,
   code: string,
   language: string
-): Promise<any> {
+ ) {
   const res = await fetch(`${API_BASE}/api/v1/interviews/${sessionId}/submit-code`, {
     method: "POST",
     headers: {
@@ -123,7 +127,7 @@ export async function submitCodeDuringInterview(
 /**
  * Save agent response message to backend
  */
-export async function saveAgentResponse(sessionId: string, message: string): Promise<any> {
+export async function saveAgentResponse(sessionId: string, message: string) {
   const res = await fetch(`${API_BASE}/api/v1/interviews/${sessionId}/response`, {
     method: "POST",
     headers: {
