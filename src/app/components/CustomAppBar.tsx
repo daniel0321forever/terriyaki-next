@@ -9,10 +9,12 @@ import {
   Menu,
   MenuItem,
   Avatar,
+  Divider,
 } from '@mui/material';
 import {
   Home as HomeIcon,
   AccountCircle as AccountCircleIcon,
+  CreditCard as CreditCardIcon,
 } from '@mui/icons-material';
 import { useRouter } from 'next/navigation';
 import { logout } from '@/lib/service/auth.service';
@@ -54,6 +56,11 @@ const CustomAppBar: React.FC<AppBarProps> = ({ onHomeClick }) => {
   const handleProfileClick = () => {
     handleMenuClose();
     router.push('/profile');
+  };
+
+  const handlePaymentClick = () => {
+    handleMenuClose();
+    router.push('/payment');
   };
 
   const handleLogoutClick = async () => {
@@ -154,31 +161,37 @@ const CustomAppBar: React.FC<AppBarProps> = ({ onHomeClick }) => {
           anchorEl={anchorEl}
           open={open}
           onClose={handleMenuClose}
-          onClick={handleMenuClose}
           PaperProps={{
-            elevation: 3,
+            elevation: 1,
             sx: {
-              overflow: 'visible',
-              filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
               mt: 1.5,
-              alignItems: 'center',
-              '& .MuiAvatar-root': {
-                width: 32,
-                height: 32,
-                ml: -0.5,
-                mr: 1,
+              minWidth: 200,
+              borderRadius: '12px',
+              border: '1px solid',
+              borderColor: 'divider',
+              boxShadow: '0 2px 12px rgba(0,0,0,0.08)',
+              '& .MuiMenuItem-root': {
+                px: 2,
+                py: 1.5,
+                gap: 1.5,
+                fontSize: '0.95rem',
+                display: 'flex',
+                alignItems: 'center',
+                '&:hover': {
+                  backgroundColor: 'action.hover',
+                },
+                '&:first-of-type': {
+                  borderTopLeftRadius: '12px',
+                  borderTopRightRadius: '12px',
+                },
+                '&:last-of-type': {
+                  borderBottomLeftRadius: '12px',
+                  borderBottomRightRadius: '12px',
+                },
               },
-              '&:before': {
-                content: '""',
-                display: 'block',
-                position: 'absolute',
-                top: 0,
-                right: 14,
-                width: 10,
-                height: 10,
-                bgcolor: 'background.paper',
-                transform: 'translateY(-50%) rotate(45deg)',
-                zIndex: 0,
+              '& .MuiDivider-root': {
+                mx: 1,
+                my: 0.5,
               },
             },
           }}
@@ -186,10 +199,16 @@ const CustomAppBar: React.FC<AppBarProps> = ({ onHomeClick }) => {
           anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
         >
           <MenuItem onClick={handleProfileClick}>
+            <AccountCircleIcon sx={{ fontSize: '1.25rem', color: 'text.secondary' }} />
             <Typography>Profile</Typography>
           </MenuItem>
+          <MenuItem onClick={handlePaymentClick}>
+            <CreditCardIcon sx={{ fontSize: '1.25rem', color: 'text.secondary' }} />
+            <Typography>Payment</Typography>
+          </MenuItem>
+          <Divider />
           <MenuItem onClick={handleLogoutClick}>
-            <Typography sx={{ color: 'error.main' }}>Logout</Typography>
+            <Typography sx={{ color: 'error.main', fontWeight: 500 }}>Logout</Typography>
           </MenuItem>
         </Menu>
       </Toolbar>
