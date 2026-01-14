@@ -208,7 +208,7 @@ export default function PaymentPage() {
     try {
       setIsLoading(true);
       const methods = await getPaymentMethods();
-      setPaymentMethods(methods);
+      setPaymentMethods(methods || []);
     } catch (error: any) {
       console.error('Failed to fetch payment methods:', error);
       setSnackbar({
@@ -216,6 +216,7 @@ export default function PaymentPage() {
         message: 'Failed to load payment methods',
         severity: 'error',
       });
+      setPaymentMethods([]);
     } finally {
       setIsLoading(false);
     }
